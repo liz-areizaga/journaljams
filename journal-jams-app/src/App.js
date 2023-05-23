@@ -7,6 +7,7 @@ import Home from './Pages';
 import Friends from './Pages/Friends';
 import Profile from './Pages/Profile';
 import MyEntries from './Pages/index';
+import NoPage from './Pages/NoPage';
   
 function App() {
 return (
@@ -17,6 +18,7 @@ return (
         <Route path='/myentries' element={<MyEntries/>} />
         <Route path='/profile' element={<Profile/>} />
         <Route path='/friends' element={<Friends/>} />
+        <Route path="*" element={<NoPage />} />
     </Routes>
     </Router>
 );
