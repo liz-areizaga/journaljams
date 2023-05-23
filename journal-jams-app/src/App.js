@@ -9,7 +9,7 @@ import Profile from './pages_2/Profile';
 import MyEntries from './pages_2/index';
 import PrivateRoute from "./pages/PrivateRoute.page";
 import Signup from "./pages/Signup.page";
-import NoPage from './Pages/NoPage';
+import NoPage from './pages_2/NoPage';
 // import LoginPage from './login/login'
 
 
@@ -27,7 +27,7 @@ function App() {
         {/* We are protecting our Home Page from unauthenticated */}
         {/* users by wrapping it with PrivateRoute here. */}
         <Route element={<PrivateRoute />}>
-          <Navbar />
+          {/* <Navbar /> */}
           <Route exact path="/" element={<Home />} />
           <Route path='/myentries' element={<MyEntries/>} />
           <Route path='/profile' element={<Profile/>} />
