@@ -2,7 +2,8 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { UserProvider } from "./contexts/user.context";
 import Navbar from './Components/Navbar';
-import Home from "./pages/Home.page";
+import NoNavbar from './Components/NoNavbar';
+// import Home from "./pages/Home.page";
 import Login from "./pages/Login.page";
 import Friends from './pages_2/Friends';
 import Profile from './pages_2/Profile';
@@ -21,19 +22,18 @@ function App() {
     {/* We are wrapping our whole app with UserProvider so that */}
     {/* our user is accessible through out the app from any page*/}
     <UserProvider>
-    <Navbar />
       <Routes>
-        <Route exact path="/login" element={<Login />} /> 
-        <Route exact path="/signup" element={<Signup />} /> 
+        <Route exact path="/login" element={<><NoNavbar/><Login/></>} /> 
+        <Route exact path="/signup" element={<><NoNavbar/><Signup/></>} /> 
         {/* We are protecting our Home Page from unauthenticated */}
         {/* users by wrapping it with PrivateRoute here. */}
-        <Route element={<PrivateRoute />}>
+      <Route element={<PrivateRoute />}>
           {/* <Route exact path="/" element={<Home />} /> */}
-          <Route exact path="/" element={<MyEntries />} />
-          <Route path='/myentries' element={<MyEntries/>} />
-          <Route path='/profile' element={<Profile/>} />
-          <Route path='/friends' element={<Friends/>} />
-          <Route path="*" element={<NoPage />} />
+          <Route exact path="/" element={<><Navbar/><MyEntries/></>} />
+          <Route path='/myentries' element={<><Navbar/><MyEntries/></>} />
+          <Route path='/profile' element={<><Navbar/><Profile/></>} />
+          <Route path='/friends' element={<><Navbar/><Friends/></>} />
+          <Route path="*" element={<><Navbar/><NoPage/></>} />
         </Route>
       </Routes>
     </UserProvider>
