@@ -13,13 +13,13 @@ const Navbar = () => {
   return (
     <>
       <Nav>
-        <NavLink to="/MyEntries" activeStyle>
+        <NavLink to="/MyEntries" activestyle = "true">
           My Entries
         </NavLink>
-        <NavLink to="/Friends" activeStyle>
+        <NavLink to="/Friends" activestyle = "true">
           Friends
         </NavLink>
-        <NavLink to="/Profile" activeStyle>
+        <NavLink to="/Profile" activestyle = "true">
           Profile
         </NavLink>
           <CoverImg src={Default} alt = "Default profile picture"/>

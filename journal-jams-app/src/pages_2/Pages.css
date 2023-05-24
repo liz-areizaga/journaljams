@@ -63,6 +63,7 @@ a {
 
 .my-profile-container {
   width: 90%;
+  height: 300px;
   border: 1px solid black;  
   margin-top: 2.5%;
   margin-bottom: 2.5%;
@@ -152,11 +153,12 @@ a {
 }
 
 .profile-text {
-  font-size: large;
+  font-size: 30px;
   font-weight: bold;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'Times New Roman';
   width: 100%;
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .pfp-file{
@@ -164,5 +166,57 @@ a {
 
   display: flex;
   justify-content: flex-start;
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid black;
+}
+
+#logout-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+#modal-close {
+  background-color: transparent;
+  border: transparent;
+  font-size: x-large;
+}
+
+#modal-close:hover {
+  cursor: pointer;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+#title {
+  border: solid 1px black;
+}
+
+#entry {
+  resize:none;
+  border: solid 1px black;
+  height:400px;
+}
+
+.modal-labels {
+  font-size: x-large;
+}
+
+.form-control{
+  font-size: large;
+  font-family: 'Times New Roman';
+}
+
+.btn-primary{
+  font-size: large;
+  margin-top:5px;
 }

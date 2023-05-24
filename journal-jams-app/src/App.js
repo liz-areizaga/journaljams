@@ -21,14 +21,15 @@ function App() {
     {/* We are wrapping our whole app with UserProvider so that */}
     {/* our user is accessible through out the app from any page*/}
     <UserProvider>
+    <Navbar />
       <Routes>
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/signup" element={<Signup />} />
+        <Route exact path="/login" element={<Login />} /> 
+        <Route exact path="/signup" element={<Signup />} /> 
         {/* We are protecting our Home Page from unauthenticated */}
         {/* users by wrapping it with PrivateRoute here. */}
         <Route element={<PrivateRoute />}>
-          {/* <Navbar /> */}
-          <Route exact path="/" element={<Home />} />
+          {/* <Route exact path="/" element={<Home />} /> */}
+          <Route exact path="/" element={<MyEntries />} />
           <Route path='/myentries' element={<MyEntries/>} />
           <Route path='/profile' element={<Profile/>} />
           <Route path='/friends' element={<Friends/>} />
