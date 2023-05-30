@@ -7,10 +7,11 @@ const path = require('path');
 const app = express();
 
 // // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'journal-jams-app/src')));
+console.log(__dirname);
+app.use(express.static('/Users/lizbethareizaga/Documents/Spr23/CS110/Proj/project-journaljams/journal-jams-app/src'));
 
 app.get('/api/getEntries', (req, res) => {
-    console.log("Inside get api get entries");
+    // console.log("Inside get api get entries");
     var entries_list = [
         {
             title: 'Good days',

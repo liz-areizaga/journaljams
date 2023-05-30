@@ -25,22 +25,11 @@ function App() {
         <Route exact path="/signup" element={<Signup />} />
         {/* We are protecting our Home Page from unauthenticated */}
         {/* users by wrapping it with PrivateRoute here. */}
-<<<<<<< Updated upstream
         <Route element={<PrivateRoute />}>
             <Route exact path="/" element={<Home />} />
             <Route path='/entries' element={<Entries/>} />
             <Route path='/profile' element={<Profile/>} />
             <Route path='/friends' element={<Friends/>} />
-=======
-      <Route element={<PrivateRoute />}>
-          {/* <Route exact path="/" element={<Home />} /> */}
-          <Route exact path="/" element={<><Navbar/><MyEntries/></>} />
-          <Route path='/myentries' element={<><Navbar/><MyEntries/></>} />
-          <Route path='/profile' element={<><Navbar/><Profile/></>} />
-          <Route path='/friends' element={<><Navbar/><Friends/></>} />
-          {/* <Route exact path='/add-entry' /> */}
-          <Route path="*" element={<><Navbar/><NoPage/></>} />
->>>>>>> Stashed changes
         </Route>
       </Routes>
     </UserProvider>
