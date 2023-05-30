@@ -1,16 +1,14 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { UserProvider } from "./contexts/user.context";
-import Navbar from './Components/Navbar';
-import NoNavbar from './Components/NoNavbar';
-// import Home from "./pages/Home.page";
+import Home from "./pages/Home.page";
 import Login from "./pages/Login.page";
-import Friends from './pages_2/Friends';
-import Profile from './pages_2/Profile';
-import MyEntries from './pages_2/index';
+import Friends from './pages/Friends';
+import Profile from './pages/Profile';
+import Entries from './pages/Entries';
 import PrivateRoute from "./pages/PrivateRoute.page";
 import Signup from "./pages/Signup.page";
-import NoPage from './pages_2/NoPage';
+
 // import LoginPage from './login/login'
 
 
@@ -23,17 +21,15 @@ function App() {
     {/* our user is accessible through out the app from any page*/}
     <UserProvider>
       <Routes>
-        <Route exact path="/login" element={<><NoNavbar/><Login/></>} /> 
-        <Route exact path="/signup" element={<><NoNavbar/><Signup/></>} /> 
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/signup" element={<Signup />} />
         {/* We are protecting our Home Page from unauthenticated */}
         {/* users by wrapping it with PrivateRoute here. */}
-      <Route element={<PrivateRoute />}>
-          {/* <Route exact path="/" element={<Home />} /> */}
-          <Route exact path="/" element={<><Navbar/><MyEntries/></>} />
-          <Route path='/myentries' element={<><Navbar/><MyEntries/></>} />
-          <Route path='/profile' element={<><Navbar/><Profile/></>} />
-          <Route path='/friends' element={<><Navbar/><Friends/></>} />
-          <Route path="*" element={<><Navbar/><NoPage/></>} />
+        <Route element={<PrivateRoute />}>
+            <Route exact path="/" element={<Home />} />
+            <Route path='/entries' element={<Entries/>} />
+            <Route path='/profile' element={<Profile/>} />
+            <Route path='/friends' element={<Friends/>} />
         </Route>
       </Routes>
     </UserProvider>

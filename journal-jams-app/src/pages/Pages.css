@@ -63,7 +63,6 @@ a {
 
 .my-profile-container {
   width: 90%;
-  height: 300px;
   border: 1px solid black;  
   margin-top: 2.5%;
   margin-bottom: 2.5%;
@@ -122,101 +121,4 @@ a {
 .new-entry-button:active {
   background-color: #E7DFD8;
   /* box-shadow: inset 0 0 0 2px #d1c1b4;  */
-}
-
-#bar{
-  width:80%;
-  height:3%;
-  background-color: #d8e0e7; 
-  font-family:"Times New Roman";
-  font-size:large;
-  resize:none;
-}
-
-#submit-button{
-  width: 19.5%;
-  height:3.5%;
-  margin-left:80.5%;
-  margin-top:-3.5%;
-  background-color: #d8e0e7; 
-  font-family:"Times New Roman";
-  font-size:large;
-}
-
-.pfp-file {
-  width: 100%;
-}
-
-.profile-title {
-  display:flex;
-  flex-direction: column;
-}
-
-.profile-text {
-  font-size: 30px;
-  font-weight: bold;
-  font-family: 'Times New Roman';
-  width: 100%;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.pfp-file{
-  width: 100%;
-
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid black;
-}
-
-#logout-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-
-  padding-right: 5px;
-  padding-top: 5px;
-}
-
-#modal-close {
-  background-color: transparent;
-  border: transparent;
-  font-size: x-large;
-}
-
-#modal-close:hover {
-  cursor: pointer;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-content: flex-start;
-}
-
-#title {
-  border: solid 1px black;
-}
-
-#entry {
-  resize:none;
-  border: solid 1px black;
-  height:400px;
-}
-
-.modal-labels {
-  font-size: x-large;
-}
-
-.form-control{
-  font-size: large;
-  font-family: 'Times New Roman';
-}
-
-.btn-primary{
-  font-size: large;
-  margin-top:5px;
 }
