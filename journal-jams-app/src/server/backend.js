@@ -32,7 +32,6 @@ app.get('*', (res, req) => {
 app.listen(1234);
 
 //connect to mongodb
-// const dbURI = 'mongodb+srv://journaljams:journal-jams-cs110@cluster0.s5dxxum.mongodb.net/EntriesDB?retryWrites=true&w=majority'
 // mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 //     .then((result) => app.listen(3000))
 //     .catch((err) => console.log(err));
