@@ -17,15 +17,6 @@ function closeModal() {
 	window.location.reload(true);
 }
 
-useEffect(() => {
-    fetch('/api/getEntries') //error is coming from here
-	// .then(res => res.text()) //check if wrong type coming through
-	// .then(text => JSON.parse(text))
-     .then(res => res.json()) 
-     .then(entries_list => {
-		setEntries(entries_list)});
- })
-
 return (
 
 	<div className="my-entries-wrapper">

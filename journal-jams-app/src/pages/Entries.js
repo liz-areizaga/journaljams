@@ -18,14 +18,6 @@ const Entries = () => {
     window.location.reload(true);
   }
 
-  useEffect(() => {
-    fetch('/api/getEntries') //error is coming from here
-	// .then(res => res.text()) //check if wrong type coming through
-	// .then(text => JSON.parse(text))
-     .then(res => res.json()) 
-     .then(entries_list => {
-		setEntries(entries_list)});
- }, []); //dependency so that only updates once -> change to entries array to have the hook be called only when array updates
   return (
     <>
       <NavBar />
@@ -36,13 +28,12 @@ const Entries = () => {
         <Modal
           isOpen={newEntryFlag}
           ariaHideApp={false}
-              // onAfterOpen={afterOpenModal}
               onRequestClose={closeModal}
               contentLabel="Example Modal"
             >
           <button id="modal-close" onClick={closeModal}>X</button>
               <h2>New Entry</h2>
-              <form>
+              <form id="new-entry-form" action='http://localhost:1234/api/newEntry' method="POST">
                 <div className="form-group">
                   <label className="modal-labels" htmlFor="exampleInputPassword1">Title</label>
                   <input className="form-control" name="title" id="title"/>
@@ -57,11 +48,11 @@ const Entries = () => {
       </Modal>
         <Box className="my-entries-container">
           {/* Holds the entries of the user */}
-          {entries.map((entry, i) => {
+          {/* {entries.map((entry, i) => {
             return (
               <li> {entry.title }</li>
               )
-            })}
+            })} */}
         </Box>
       </Box>
     </>
