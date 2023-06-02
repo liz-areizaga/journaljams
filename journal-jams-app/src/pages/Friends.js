@@ -2,8 +2,25 @@ import React from 'react';
 import './Pages.css';
 import NavBar from "../Components/NewNavbar/Navbar"
 import { Box, Button } from '@mui/material';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 const Friends = () => {
+  const [entriesList, setEntriesList] = useState([
+  {
+  title: "",
+      text: "",
+      mood: "" 
+    }
+  ]);
+
+  useEffect(() => {
+    fetch('/api/allEntries', {method:"GET"})
+      .then(response => response.json())
+      .then((jsonRes) => setEntriesList(jsonRes))
+      .catch(err => console.log(err));
+  }, []);
+
   return (
     <>
       <NavBar />
@@ -13,6 +30,9 @@ const Friends = () => {
 		</Box>
         <Box className="my-friends-container">
           {/* Holds the friends of the user and search bar for sending friend requests */}
+          {entriesList.map((entry, i) => (
+            <li key={i}> {entry.title}</li>
+          ))}
         </Box>
       </Box>
     </>

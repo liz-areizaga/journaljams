@@ -40,3 +40,15 @@ app.post('/api/newEntry', (req, res) => { //add the newEntry to the DB
             console.log(err);
         });
 });
+
+app.get('/api/allEntries', (req, res) => {
+    console.log("Inside of /api/allEntries");
+    Entry.find()
+        .then((result) => {
+            // console.log(result);
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+});
