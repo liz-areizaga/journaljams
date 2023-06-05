@@ -31,7 +31,7 @@ const Friends = () => {
         <Box className="my-friends-container">
           {/* Holds the friends of the user and search bar for sending friend requests */}
           {entriesList.map((entry, i) => (
-            <li key={i}> {entry.title}</li>
+            <li key={i}> <p> {entry.title} <br/> {entry.text} </p> </li>
           ))}
         </Box>
       </Box>
