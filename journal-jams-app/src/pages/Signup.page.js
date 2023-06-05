@@ -33,8 +33,18 @@ const Signup = () => {
     const onSubmit = async () => {
       try {
         const user = await emailPasswordSignup(form.email, form.password);
-        if (user) {
-          redirectNow();
+        if (user) {          
+          fetch(`/api/newUser/${form.email}`, {
+            method: "POST",
+            body: JSON.stringify({ email: form.email }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => { 
+            // Handle the response from the API
+            redirectNow();
+          });
         }
       } catch (error) {
         alert(error);
