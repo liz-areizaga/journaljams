@@ -5,9 +5,46 @@ const User = require('../Models/UserInfo');
 const path = require('path');
 const dotenv = require('dotenv');
 const bodyParser = require( 'body-parser');
+const socketIO = require('socket.io');
+const http = require('http');
+const cors  = require("cors");
+const session = require('express-session');
 
 //express app
 const app = express();
+const server = http.createServer(app);
+
+const io = socketIO(server, {
+    cors: {
+        origin: '*',
+    }
+});
+app.use(cors({origin: 'http://localhost:3000', credentials: true}))
+
+//socket is the connection you have to the specific user
+//io is general to all 
+io.on('connection', (socket) => { 
+    let room = undefined;
+    let userName = undefined;
+    console.log("user Connected")
+    socket.on("disconnect", () => {
+        console.log("user Disconnected")
+    })
+    socket.on("chat message", (data) => {
+        console.log("got message", data)
+        io.to(room).emit("chat message", data)
+    })
+    socket.on("join", (data) => {
+        socket.join(data.room)
+        room = data.room
+        userName = data.userName
+        console.log("got message", data)
+        console.log(`user is joined to room ${data.room}`)
+    })
+
+    socket.emit("starting data", {"text": "hi"})
+    
+})
 
 dotenv.config({path: 'src/server/.env'}); //reads the .env file and parses it
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,7 +58,24 @@ const database = mongoose.connection;
 database.on('error', (error) => console.log(error));
 database.once('connected', () => {
     console.log('Connected to database'),
-    app.listen(1234);
+    server.listen(process.env.PORT, () => {
+        console.log(`Server listening on port ${process.env.PORT}`);
+      });
+});
+
+const sessionMiddleware = session({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET,
+})
+
+app.get('/', (req, res) => {
+    console.log("in api home");
+});
+
+const createdRooms = [];
+app.get('/api/rooms', (req, res) => {
+    res.json(createdRooms);
 });
 
 app.post('/api/newUser/:email', (req, res) => { //add the newEntry to the DB
