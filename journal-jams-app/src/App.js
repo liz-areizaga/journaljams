@@ -6,6 +6,7 @@ import Login from "./pages/Login.page";
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
 import Entries from './pages/Entries';
+import Lobby from './pages/Lobby';
 import PrivateRoute from "./pages/PrivateRoute.page";
 import Signup from "./pages/Signup.page";
 
@@ -30,6 +31,7 @@ function App() {
             <Route path='/entries' element={<Entries/>} />
             <Route path='/profile' element={<Profile/>} />
             <Route path='/friends' element={<Friends/>} />
+            <Route path='/lobby' element={<Lobby/>} />
         </Route>
       </Routes>
     </UserProvider>
