@@ -62,8 +62,8 @@ const Entries = () => {
               <TextField id="entry" name="entry" fullWidth multiline rows={20} />
             </Box>
             <Box display="flex" justifyContent="flex-end">
-              <Button onClick={closeModal}>Close</Button>
-              <Button type="submit">Submit</Button>
+              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
+              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
             </Box>
           </form>
         </Modal>
