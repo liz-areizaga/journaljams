@@ -96,29 +96,9 @@ a {
 
 .new-entry-button-container {
   width: 90%;
-
   display: flex;
   align-self: center;
   justify-self: flex-start;
   flex-direction: row;
   justify-content: flex-start;
-}
-
-.new-entry-button{
-  background-color: #E7DFD8;
-  color: black;
-  font-size:120%;
-  border-radius: 40px;
-  outline: none;
-  border: 1px solid transparent;
-  box-shadow: inset 0 0 0 2px black; 
-  font-family:"Times New Roman";
-  padding: 4px 15px;
-}
-.new-entry-button:hover {
-  background-color: #d1c1b4;
-}
-.new-entry-button:active {
-  background-color: #E7DFD8;
-  /* box-shadow: inset 0 0 0 2px #d1c1b4;  */
 }

@@ -2,9 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Entry = require('../Models/Entries'); 
 const User = require('../Models/UserInfo');
+const profilepic = require('../Models/ProfilePics');
+const multer = require('multer');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 const path = require('path');
 const dotenv = require('dotenv');
 const bodyParser = require( 'body-parser');
+const routes = require('./routes/profilepic_backend.js');
 
 //express app
 const app = express();
@@ -22,6 +28,24 @@ database.on('error', (error) => console.log(error));
 database.once('connected', () => {
     console.log('Connected to database'),
     app.listen(1234);
+});
+
+app.post('/api/newProfilePic', upload.single('image'), async (req, res) => {
+    console.log('Inside of /api/newProfilePic');
+    const image = new profilepic({
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+    });
+    image.save()    
+        .then((result) => {
+            console.log("Sent your profile pic to the DB!");
+            res.json({ id: image._id });
+            // res.send(result);
+        })
+        .catch((err) => {
+            console.error('Failed to upload image', err);
+            // res.status(500).json({ error: 'Failed to upload image' });
+        });
 });
 
 app.post('/api/newUser/:email', (req, res) => { //add the newEntry to the DB
@@ -69,3 +93,5 @@ app.get('/api/allEntries', (req, res) => {
             console.log(err);
         })
 });
+
+// app.use('/api', routes);
