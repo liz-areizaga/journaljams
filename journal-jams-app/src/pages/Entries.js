@@ -8,6 +8,8 @@ const Entries = () => {
   const { fetchUser } = useContext(UserContext);
   const [newEntryFlag, setNewEntryFlag] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
   const [currentUser, setCurrentUser] = useState("");
   const [entriesList, setEntriesList] = useState([
     {
@@ -43,6 +45,15 @@ const Entries = () => {
   useEffect(() => {
     handleFetchUser();
   }, []);
+
+  const handleEntryClick = (entry) => {
+    setSelectedEntry(entry);
+    setIsModalOpen(true);
+  };
+
+  const closeEntryModal = () => {
+    setIsModalOpen(false);
+  };
 
   function openModal() {
     setNewEntryFlag(true);
@@ -120,16 +131,35 @@ const Entries = () => {
         </Modal>
         <Box className="my-entries-container" style={{ display: showEntries ? 'block' : 'none', marginTop: '10px' }}>
           <List>
+            <ListItemText> 
+              <Typography variant="body1" style={{ fontWeight: 'bold', marginLeft: '10px' }}>
+                Title 
+              </Typography>
+            </ListItemText> 
             {entriesList.map((entry) => (
-              <ListItemButton key={entry.title}>
+              <ListItemButton key={entry.title} onClick={() => handleEntryClick(entry)}>
                 <ListItemText primary={entry.title} />
-                <ListItemText primary={entry.text} />
                 <Button variant="contained" color="error">
                   Remove
                 </Button>
               </ListItemButton>
             ))}      
-          </List>  
+          </List>
+          <Modal
+            isOpen={isModalOpen}
+            ariaHideApp={false}
+            onRequestClose={closeModal}
+            contentLabel="Example Modal"
+          >
+            <Typography variant="h4" gutterBottom> Entry Details </Typography>
+            {selectedEntry && (
+              <>
+                <Typography variant="h5" gutterBottom> Title: {selectedEntry.title} </Typography>
+                <Typography variant="body1" gutterBottom> Text: {selectedEntry.text} </Typography>
+              </>
+            )}
+            <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeEntryModal}>Close</Button>
+          </Modal>  
         </Box>
       </Box>
     </>

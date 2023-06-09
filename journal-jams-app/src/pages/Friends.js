@@ -16,14 +16,6 @@ const Friends = () => {
   const [showFriends, setShowFriends] = useState(false);
   var templist = [];
 
-  // const [entriesList, setEntriesList] = useState([
-  //   {
-  //     title: "",
-  //     text: "",
-  //     mood: ""
-  //   }
-  // ]);
-
   const handleFetchUser = async () => {
     try {
       const fetchedUser = await fetchUser();
@@ -115,6 +107,18 @@ const Friends = () => {
           onRequestClose={closeModal}
           contentLabel="Example Modal"
         >
+          <Button
+            variant="contained"
+            color="error"
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px'
+            }}
+            onClick={closeModal}
+          >
+            X
+          </Button>
           <Typography variant="h4" gutterBottom> Add Friend </Typography>
           <SearchBar searchlabel="Enter a user email" searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <Box style={{ padding: 3 }}>
