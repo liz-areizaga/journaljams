@@ -124,7 +124,7 @@ const Entries = () => {
               <TextField id="entry" name="entry" fullWidth multiline rows={20} />
             </Box>
             <Box display="flex" justifyContent="flex-end">
-              <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
+              <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
               <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
             </Box>
           </form>
@@ -158,7 +158,7 @@ const Entries = () => {
                 <Typography variant="body1" gutterBottom> Text: {selectedEntry.text} </Typography>
               </>
             )}
-            <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeEntryModal}>Close</Button>
+            <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeEntryModal}>Close</Button>
           </Modal>  
         </Box>
       </Box>
