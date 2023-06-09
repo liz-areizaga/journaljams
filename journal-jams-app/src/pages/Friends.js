@@ -1,13 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import './Pages.css';
 import NavBar from "../Components/NewNavbar/Navbar";
-import { Box, Button, Typography} from '@mui/material';
-import Modal from 'react-modal';
-
+import { Box, Button, Typography, List, ListItemButton, ListItemText} from '@mui/material';import Modal from 'react-modal';
+import SearchBar from "../Components/Searchbar/Searchbar";
+import { UserContext } from "../contexts/user.context";
 
 const Friends = () => {  
-  const [newEntryFlag, setNewEntryFlag] = useState(false);
 
+  const { fetchUser } = useContext(UserContext);
+  const [newEntryFlag, setNewEntryFlag] = useState(false);
+  const [data, setData] = useState([]);
+  const [currentUser, setCurrentUser] = useState("");
+  const [friendList, setFriendList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFriends, setShowFriends] = useState(false);
+  var templist = [];
+
+  // const [entriesList, setEntriesList] = useState([
+  //   {
+  //     title: "",
+  //     text: "",
+  //     mood: ""
+  //   }
+  // ]);
+
+  const handleFetchUser = async () => {
+    try {
+      const fetchedUser = await fetchUser();
+      if(fetchedUser) { console.log("Current User:", fetchedUser.profile.email); 
+        setCurrentUser(fetchedUser.profile.email);
+        await fetch('/api/allUsers', {method:"GET"})
+          .then(response => response.json())
+          .then((jsonRes) => setData(jsonRes))
+          .catch(err => console.log(err));
+        await fetch(`/api/userfriendList/${fetchedUser.profile.email}`, {method:"GET"})
+          .then(response => response.json())
+          .then((jsonRes) => setFriendList(jsonRes))
+          .catch(err => console.log(err));
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+  useEffect(() => () => { handleFetchUser();}, []);
+
+  const filterData = (query, data) => {
+    if (!query) {
+      return data;
+    } else {
+      const lowercaseQuery = query.toLowerCase();
+      return data.filter((d) => d.email.toLowerCase().includes(lowercaseQuery));
+    }
+  };
+  const dataFiltered = filterData(searchQuery, data);
+  
   function openModal() {
     setNewEntryFlag(true);
   }
@@ -17,21 +64,36 @@ const Friends = () => {
     window.location.reload(true);
   }
 
-  const [entriesList, setEntriesList] = useState([
-    {
-      title: "",
-      text: "",
-      mood: ""
+  const onSubmit = (user, friendList) => {
+    try {
+      fetch(`/api/newUserFriendList/${user}`, {
+        method: "POST",
+        body: JSON.stringify({ email: user, friends: friendList }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Friend list saved successfully');
+          // Handle the response from the API
+        } else {
+          throw new Error('Failed to save friend list');
+        }
+      });
+    } catch (error) {
+      console.error('Error saving friend list:', error);
+      alert(error);
     }
-  ]);
-  const [showFriends, setShowFriends] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/allEntries', { method: "GET" })
-      .then(response => response.json())
-      .then((jsonRes) => setEntriesList(jsonRes))
-      .catch(err => console.log(err));
-  }, []);
+  };
+  
+  const addFriend = (friend) => {
+    if(!friendList.includes(friend)) {
+      setFriendList([...friendList, friend]);
+      templist = [...friendList, friend];
+      onSubmit(currentUser, templist)
+    }
+  };
 
   function toggleFriends() {
     setShowFriends(!showFriends);
@@ -42,8 +104,8 @@ const Friends = () => {
       <NavBar />
       <Box className="my-friends-wrapper">
         <Box className="new-entry-button-container">
-          <Button variant="outlined" className="new-entry-button" onClick={openModal} style={{ marginTop: '10px', marginRight: '10px' }}>Add Friend</Button>
-          <Button variant="outlined" onClick={toggleFriends} style={{ marginTop: '10px' }}>
+          <Button variant="contained" className="new-entry-button" onClick={openModal} style={{ marginTop: '10px', marginRight: '10px' }}>Add Friend</Button>
+          <Button variant="contained" onClick={toggleFriends} style={{ marginTop: '10px' }}>
             {showFriends ? 'Hide Friends' : 'Show Friends'}
           </Button>
         </Box>
@@ -54,28 +116,38 @@ const Friends = () => {
           contentLabel="Example Modal"
         >
           <Typography variant="h4" gutterBottom> Add Friend </Typography>
-          {/*  Change to add friends
-            <form id="new-entry-form" action='http://localhost:1234/api/newEntry' method="POST">
-            <Box mb={2}>
-              <InputLabel className="modal-labels" htmlFor="exampleInputPassword1">Title</InputLabel>
-              <TextField id="title" name="title" variant="outlined" fullWidth />
-            </Box>
-            <Box mb={2}>
-              <InputLabel className="modal-labels" htmlFor="exampleInputPassword1">Entry</InputLabel>
-              <TextField id="entry" name="entry" fullWidth multiline rows={20} />
-            </Box>
-            <Box display="flex" justifyContent="flex-end">
-              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
-              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
-            </Box>
-          </form> */}
+          <SearchBar searchlabel="Enter a user email" searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <Box style={{ padding: 3 }}>
+            {dataFiltered.map((d) => (
+              <Box
+                className="text"
+                sx={{
+                  padding: 2,
+                  fontSize: 20,
+                  color: "blue",
+                  margin: 1,
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                key={d.id}
+              >
+                <Typography sx={{ marginRight: 2, font: "Roboto",}}>{d.email}</Typography>
+                <Button variant="contained" sx={{ marginLeft: 2 }} onClick={() => {addFriend(d.email);}}> Add User </Button>
+              </Box>
+            ))}
+          </Box>
         </Modal>
         {showFriends && (
           <Box className="my-friends-container" style={{ marginTop: '10px' }}>
-            {/* Holds the friends of the user and search bar for sending friend requests */}
-            {/* {entriesList.map((entry, i) => (
-              <li key={i}> <p> {entry.title} <br /> {entry.text} </p> </li>
-            ))} */}
+            <List>
+              {friendList.map((friend) => (
+                <ListItemButton > 
+                  <ListItemText primary={friend}/> 
+                  <Button variant="contained" color="error"> Remove </Button>
+                </ListItemButton>
+              ))}              
+            </List>            
           </Box>
         )}
       </Box>

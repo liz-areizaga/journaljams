@@ -34,8 +34,7 @@ export const UserProvider = ({ children }) => {
  
  // Function to fetch the user (if the user is already logged in) from local storage
  const fetchUser = async () => {
-   if (!app.currentUser) return false;
-   try {
+   if (!app.currentUser) return false;   try {
      await app.currentUser.refreshCustomData();
      // Now, if we have a user, we are setting it to our user context
      // so that we can use it in our app across different components.
