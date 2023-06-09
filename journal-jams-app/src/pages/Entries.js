@@ -90,8 +90,8 @@ const Entries = () => {
       <NavBar />
       <Box className="my-entries-wrapper">
         <Box className="new-entry-button-container">
-          <Button variant="outlined" className="new-entry-button" onClick={openModal} style={{ marginTop: '10px', marginRight: '10px' }}>New Entry</Button>
-          <Button variant="outlined" onClick={toggleEntries} style={{ marginTop: '10px' }}>
+          <Button variant="contained" className="new-entry-button" onClick={openModal} style={{ marginTop: '10px', marginRight: '10px' }}>New Entry</Button>
+          <Button variant="contained" onClick={toggleEntries} style={{ marginTop: '10px' }}>
             {showEntries ? 'Hide Entries' : 'Show Entries'}
           </Button>
         </Box>
@@ -113,8 +113,8 @@ const Entries = () => {
               <TextField id="entry" name="entry" fullWidth multiline rows={20} />
             </Box>
             <Box display="flex" justifyContent="flex-end">
-              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
-              <Button variant="outlined" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
+              <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
+              <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
             </Box>
           </form>
         </Modal>
