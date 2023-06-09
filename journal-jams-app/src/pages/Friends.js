@@ -4,6 +4,7 @@ import NavBar from "../Components/NewNavbar/Navbar"
 import { Box, Button } from '@mui/material';
 import { useEffect } from 'react';
 import { useState } from 'react';
+// import {main} from '../pages_2/SpotifyNLP.js';
 
 const Friends = () => {
   const [entriesList, setEntriesList] = useState([
