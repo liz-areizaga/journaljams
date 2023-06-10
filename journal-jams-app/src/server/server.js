@@ -140,9 +140,8 @@ app.get('/api/allEntries/:user', (req, res) => {
     const user = req.params.user;
     // Entry.find({email})
     Entry.find({user})
-        .select('title text')
         .then((result) => {
-            console.log(result);
+            // console.log(result);
             res.send(result);
         })
         .catch((err) => {
@@ -169,7 +168,7 @@ app.get('/api/userfriendList/:email', (req, res) => {
     FriendList.findOne({ email })
         .select('friends')
         .then((result) => {
-            console.log(result.friends);
+            // console.log(result.friends);
             res.send(result.friends);
         })
         .catch((err) => {
@@ -177,6 +176,19 @@ app.get('/api/userfriendList/:email', (req, res) => {
         });
   });
   
+  app.delete('/api/deleteEntry/:id', (req, res) => {
+    const entryId = req.params.id;
+    Entry.findByIdAndDelete(entryId)
+      .then(() => {
+        console.log(`Entry with ID ${entryId} deleted successfully.`);
+        // res.sendStatus(200);
+        res.json({ message: 'Entry deleted successfully' });
+      })
+      .catch((err) => {
+        console.error(`Error deleting entry with ID ${entryId}:`, err);
+        res.sendStatus(500);
+      });
+  });
     
   
 // app.use('/api', routes);

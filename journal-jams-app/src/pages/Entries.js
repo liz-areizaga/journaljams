@@ -13,6 +13,7 @@ const Entries = () => {
   const [currentUser, setCurrentUser] = useState("");
   const [entriesList, setEntriesList] = useState([
     {
+        id: "",
         title: "",
         text: "",
       }
@@ -28,6 +29,7 @@ const Entries = () => {
           .then(response => response.json())
           .then((jsonRes) => {
             const transformedEntries = jsonRes.map((entry) => ({
+              id: entry._id,
               title: entry.title,
               text: entry.text,
             }));
@@ -61,12 +63,26 @@ const Entries = () => {
 
   function closeModal() {
     setNewEntryFlag(false);
-    window.location.reload(true);
+    // window.location.reload(true);
+    handleFetchUser();
   }
 
   function toggleEntries() {
     setShowEntries(!showEntries);
   }
+
+  const deleteEntry = (entry) => {
+    console.log("Deleting entry:", entry.id);
+    fetch(`/api/deleteEntry/${entry.id}`, {method:"DELETE"})
+      .then(response => response.json())
+      .then((jsonRes) => {
+        console.log(jsonRes);
+        setEntriesList((prevEntries) =>
+          prevEntries.filter((prevEntry) => prevEntry.id !== entry.id)
+        );
+      })
+      .catch(err => console.log(err));
+  };
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -137,12 +153,12 @@ const Entries = () => {
               </Typography>
             </ListItemText> 
             {entriesList.map((entry) => (
-              <ListItemButton key={entry.title} onClick={() => handleEntryClick(entry)}>
-                <ListItemText primary={entry.title} />
-                <Button variant="contained" color="error">
-                  Remove
-                </Button>
-              </ListItemButton>
+              <Box display="flex" alignItems="center">
+                <ListItemButton key={entry.title} onClick={() => handleEntryClick(entry)}>
+                  <ListItemText primary={entry.title} />
+                </ListItemButton>
+              <Button style={{marginLeft: '10px', marginRight: '10px'}} variant="contained" color="error" onClick={() => {deleteEntry(entry)}}> Remove </Button>              
+             </Box>
             ))}      
           </List>
           <Modal

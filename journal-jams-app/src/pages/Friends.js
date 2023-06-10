@@ -23,12 +23,16 @@ const Friends = () => {
         setCurrentUser(fetchedUser.profile.email);
         await fetch('/api/allUsers', {method:"GET"})
           .then(response => response.json())
-          .then((jsonRes) => setData(jsonRes))
+          // .then((jsonRes) => setData(jsonRes))
+          // .then((jsonRes) => console.log(jsonRes))          
+          .then((jsonRes) => setData(jsonRes.filter((user => !user.email.includes(fetchedUser.profile.email)))))
           .catch(err => console.log(err));
         await fetch(`/api/userfriendList/${fetchedUser.profile.email}`, {method:"GET"})
           .then(response => response.json())
-          .then((jsonRes) => setFriendList(jsonRes))
-          .catch(err => console.log(err));
+          .then((jsonRes) => {
+            setFriendList(jsonRes)
+          })
+          .catch(err => console.log(err));          
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -53,7 +57,8 @@ const Friends = () => {
 
   function closeModal() {
     setNewEntryFlag(false);
-    window.location.reload(true);
+    // window.location.reload(true);
+    handleFetchUser();
   }
 
   const onSubmit = (user, friendList) => {
@@ -83,6 +88,14 @@ const Friends = () => {
     if(!friendList.includes(friend)) {
       setFriendList([...friendList, friend]);
       templist = [...friendList, friend];
+      onSubmit(currentUser, templist)
+    }
+  };
+
+  const removeFriend = (friend) => {
+    if(friendList.includes(friend)) {
+      setFriendList(friendList.filter((item) => item !== friend));
+      templist = friendList.filter((item) => item !== friend);
       onSubmit(currentUser, templist)
     }
   };
@@ -146,10 +159,12 @@ const Friends = () => {
           <Box className="my-friends-container" style={{ marginTop: '10px' }}>
             <List>
               {friendList.map((friend) => (
-                <ListItemButton > 
-                  <ListItemText primary={friend}/> 
-                  <Button variant="contained" color="error"> Remove </Button>
-                </ListItemButton>
+                <Box display="flex" alignItems="center">
+                  <ListItemButton> 
+                    <ListItemText primary={friend}/> 
+                  </ListItemButton >
+                  <Button style={{marginLeft: '10px', marginRight: '10px'}}variant="contained" color="error" onClick={() => {removeFriend(friend)}}> Remove </Button>
+                </Box>
               ))}              
             </List>            
           </Box>
