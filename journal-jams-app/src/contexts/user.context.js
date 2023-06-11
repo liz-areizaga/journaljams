@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
  
  // Function to fetch the user (if the user is already logged in) from local storage
  const fetchUser = async () => {
-   if (!app.currentUser) return false;
+   if (!app.currentUser) return false;   
    try {
      await app.currentUser.refreshCustomData();
      // Now, if we have a user, we are setting it to our user context
@@ -59,7 +59,21 @@ export const UserProvider = ({ children }) => {
    }
  }
  
- return <UserContext.Provider value={{ user, setUser, fetchUser, emailPasswordLogin, emailPasswordSignup, logOutUser }}>
+  // Function to change the user's password
+  const changePassword = async (oldPassword, newPassword) => {
+    if (!app.currentUser) return false;
+    try {
+      // const credentials = Credentials.emailPassword(app.currentUser.profile.email, oldPassword);
+      // await app.emailPasswordAuth.resetPassword({password: newPassword}, token, tokenId);
+      // await app.currentUser?.linkCredentials(credentials, app.emailPasswordAuth.resetPassword(newPassword));
+      console.log("CHANGE PASSWORD FUNCTION TO BE IMPLEMENTED");
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+ return <UserContext.Provider value={{ user, setUser, fetchUser, emailPasswordLogin, emailPasswordSignup, logOutUser, changePassword}}>
    {children}
  </UserContext.Provider>;
 }
