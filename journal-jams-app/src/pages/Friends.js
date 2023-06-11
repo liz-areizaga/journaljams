@@ -75,7 +75,7 @@ const Friends = () => {
   }
 
   const handleFriendClick = (friend) => {
-    friend = "lojason71@gmail.com"
+    // friend = "lojason71@gmail.com"
     tempSelectedFriend = friend;
     setSelectedFriend(friend);
     fetch(`/api/allEntries/${tempSelectedFriend}`, {method:"GET"})
