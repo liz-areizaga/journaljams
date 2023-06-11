@@ -5,6 +5,7 @@ import Home from "./pages/Home.page";
 import Login from "./pages/Login.page";
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
+import Account from './pages/Account';
 import Entries from './pages/Entries';
 import Lobby from './pages/Lobby';
 import PrivateRoute from "./pages/PrivateRoute.page";
@@ -29,9 +30,10 @@ function App() {
         <Route element={<PrivateRoute />}>
             <Route exact path="/" element={<Home />} />
             <Route path='/entries' element={<Entries/>} />
-            <Route path='/profile' element={<Profile/>} />
             <Route path='/friends' element={<Friends/>} />
             <Route path='/lobby' element={<Lobby/>} />
+            <Route path='/profile' element={<Profile/>} />
+            <Route path='/Account' element={<Account/>} />
         </Route>
       </Routes>
     </UserProvider>
