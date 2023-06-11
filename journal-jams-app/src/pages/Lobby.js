@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Pages.css';
 import NavBar from "../Components/NewNavbar/Navbar"
 import { Box, Button, Modal, TextField} from '@mui/material';
@@ -90,7 +90,7 @@ const Lobby = () => {
     handleFetchUser();
     setSocket(io('http://localhost:1234'));
     console.log("set up socket in front end");
-  }, []);
+  }, );
 
   const handleCloseModal = () => {
         console.log("In close modal: ", currentUser);

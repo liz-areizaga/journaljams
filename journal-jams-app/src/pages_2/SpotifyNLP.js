@@ -2,7 +2,6 @@ const natural = require('natural');
 const emotions = require('./emotions.json');
 const stemmer = natural.PorterStemmer;
 const dotenv = require("dotenv");
-const path = require("path");
 
 dotenv.config({path:'src/server/.env'})
 
@@ -73,15 +72,14 @@ async function getAccessToken() { //Adapted from https://developer.spotify.com/d
 }
 
 export async function main(userText){
-  // console.log(userText);
   const emotion = classifyText(userText);
-  if (emotion == "Happy"){
-    return "Happy"
+  if (emotion === "Joy"){
+    return "Joy"
   }
-  else if (emotion == "Sad"){
+  else if (emotion === "Sad"){
     return "Sad"
   }
-  else if (emotion == "Anger"){
+  else if (emotion === "Anger"){
     return "Anger"
   }
   else{
