@@ -1,5 +1,6 @@
 import React, { useState , useEffect, useContext} from 'react';
 import NavBar from "../Components/NewNavbar/Navbar";
+import {main} from '../pages_2/SpotifyNLP.js';
 import Modal from 'react-modal';
 import { Box, Button, TextField, InputLabel, Typography, List, ListItemButton, ListItemText } from '@mui/material';
 import { UserContext } from "../contexts/user.context";
@@ -11,6 +12,7 @@ const Entries = () => {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [currentUser, setCurrentUser] = useState("");
+  const [mood, setMood] = useState('');
   const [entriesList, setEntriesList] = useState([
     {
         id: "",
@@ -85,31 +87,35 @@ const Entries = () => {
   };
 
   const onSubmit = (event) => {
-    event.preventDefault();
-    fetch('/api/newEntry', {
-      method: 'POST',
-      body: JSON.stringify({ 
-        user: currentUser,
-        title: document.getElementById('title').value,
-        entry: document.getElementById('entry').value,
-       }),
-       headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then((response) => {
-      if (response.ok) {
-        console.log('Entry submitted successfully');
-        closeModal();
-        // Handle the response from the API
-      } else {
-        throw new Error('Failed to submit entry');
-      }
-    })
-    .catch((error) => {
-      console.error('Error submitting entry:', error);
-      alert(error);
-    });
+    main(document.getElementById('entry').value).then((result)=> {
+        setMood(result);
+        event.preventDefault();
+        fetch('/api/newEntry', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            user: currentUser,
+            title: document.getElementById('title').value,
+            entry: document.getElementById('entry').value,
+            mood: result
+           }),
+           headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response) => {
+          if (response.ok) {
+            console.log('Entry submitted successfully');
+            closeModal();
+            // Handle the response from the API
+          } else {
+            throw new Error('Failed to submit entry');
+          }
+        })
+        .catch((error) => {
+          console.error('Error submitting entry:', error);
+          alert(error);
+        });
+    }
   };  
 
   return (
@@ -127,7 +133,6 @@ const Entries = () => {
           ariaHideApp={false}
           onRequestClose={closeModal}
           contentLabel="Example Modal"
-        >
           <Typography variant="h4" gutterBottom> New Entry </Typography>
           {/* <form id="new-entry-form" action='http://localhost:1234/api/newEntry' method="POST"> */}
           <form id="new-entry-form" onSubmit={onSubmit}>
@@ -141,7 +146,7 @@ const Entries = () => {
             </Box>
             <Box display="flex" justifyContent="flex-end">
               <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeModal}>Close</Button>
-              <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} type="submit">Submit</Button>
+              <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} type="submit" >Submit</Button>
             </Box>
           </form>
         </Modal>
