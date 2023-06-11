@@ -6,7 +6,7 @@ import { UserContext } from '../../contexts/user.context';
 import axios from 'axios';
 import {AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem} from '@mui/material'
 
-const pages = ['Home', 'Entries', 'Friends'];
+const pages = ['Home', 'Entries', 'Friends', 'Lobby'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 function Navbar() {
