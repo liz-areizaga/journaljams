@@ -9,12 +9,25 @@ const Friends = () => {
 
   const { fetchUser } = useContext(UserContext);
   const [newEntryFlag, setNewEntryFlag] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isEntryOpen, setIsEntryOpen] = useState(false);  
   const [data, setData] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
+  const [selectedFriend, setSelectedFriend] = useState("");
   const [friendList, setFriendList] = useState([]);
+  const [entriesList, setEntriesList] = useState([
+    {
+        id: "",
+        title: "",
+        text: "",
+      }
+    ]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFriends, setShowFriends] = useState(false);
+
   var templist = [];
+  var tempSelectedFriend = "";
 
   const handleFetchUser = async () => {
     try {
@@ -32,7 +45,7 @@ const Friends = () => {
           .then((jsonRes) => {
             setFriendList(jsonRes)
           })
-          .catch(err => console.log(err));          
+          .catch(err => console.log(err));                
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -60,6 +73,33 @@ const Friends = () => {
     // window.location.reload(true);
     handleFetchUser();
   }
+
+  const handleFriendClick = (friend) => {
+    friend = "lojason71@gmail.com"
+    tempSelectedFriend = friend;
+    setSelectedFriend(friend);
+    fetch(`/api/allEntries/${tempSelectedFriend}`, {method:"GET"})
+      .then(response => response.json())
+      .then((jsonRes) => {
+        // tempEntriesList = jsonRes;
+        setEntriesList(jsonRes);
+      });
+    console.log(entriesList);
+    setIsModalOpen(true);
+  };
+
+  const closeFriendModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleEntryClick = (entry) => {
+    setSelectedEntry(entry);
+    setIsEntryOpen(true);
+  };
+
+  const closeEntryModal = () => {
+    setIsEntryOpen(false);
+  };
 
   const onSubmit = (user, friendList) => {
     try {
@@ -160,13 +200,65 @@ const Friends = () => {
             <List>
               {friendList.map((friend) => (
                 <Box display="flex" alignItems="center">
-                  <ListItemButton> 
+                  <ListItemButton onClick={() => handleFriendClick(friend)}> 
                     <ListItemText primary={friend}/> 
                   </ListItemButton >
                   <Button style={{marginLeft: '10px', marginRight: '10px'}}variant="contained" color="error" onClick={() => {removeFriend(friend)}}> Remove </Button>
                 </Box>
               ))}              
-            </List>            
+            </List>    
+            <Modal
+                isOpen={isModalOpen}
+                ariaHideApp={false}
+                onRequestClose={closeFriendModal}
+                contentLabel="Example Modal"
+            >
+              <Button
+                  variant="contained"
+                  color="error"
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px'
+                  }}
+                  onClick={closeFriendModal}
+                >
+                  X
+              </Button> 
+              <Typography variant="h4" gutterBottom> {`${selectedFriend}'s Entries` } </Typography>                
+                <Box>               
+                  <List>
+                    <ListItemText> 
+                      <Typography variant="body1" style={{ fontWeight: 'bold', marginLeft: '10px' }}>
+                        Title 
+                      </Typography>
+                    </ListItemText> 
+                    {entriesList.map((entry) => (
+                      <Box display="flex" alignItems="center">
+                        <ListItemButton key={entry.title} onClick={() => handleEntryClick(entry)}>
+                          <ListItemText primary={entry.title} />
+                        </ListItemButton>
+                        {/* {console.log(entry)} */}
+                    </Box>
+                    ))}      
+                  </List>
+                  <Modal
+                    isOpen={isEntryOpen}
+                    ariaHideApp={false}
+                    onRequestClose={closeEntryModal}
+                    contentLabel="Example Modal"
+                  >
+                    <Typography variant="h4" gutterBottom> Entry Details </Typography>
+                    {selectedEntry && (
+                      <>
+                        <Typography variant="h5" gutterBottom> Title: {selectedEntry.title} </Typography>
+                        <Typography variant="body1" gutterBottom> Text: {selectedEntry.text} </Typography>
+                      </>
+                    )}
+                    <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeEntryModal}>Close</Button>
+                  </Modal>  
+                </Box>
+            </Modal>        
           </Box>
         )}
       </Box>
