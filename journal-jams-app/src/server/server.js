@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Entry = require('../Models/Entries'); 
 const User = require('../Models/UserInfo');
+const Message = require('../Models/Messages');
 const path = require('path');
 const dotenv = require('dotenv');
 const bodyParser = require( 'body-parser');
@@ -112,6 +113,24 @@ app.post('/api/newEntry', (req, res) => { //add the newEntry to the DB
         });
 });
 
+app.post('/api/newMessage', (req, res) => {
+    // console.log('/api/newMessage');
+    const new_message = new Message({
+        room: req.body.room,
+        message: req.body.message
+        // user: req.body.username,
+    });
+
+    new_message.save()
+        .then((result) => {
+            console.log("Sent your message to the DB!");
+            console.log(new_message);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+})
+
 app.get('/api/allEntries', (req, res) => {
     console.log("Inside of /api/allEntries");
     Entry.find()
@@ -123,3 +142,24 @@ app.get('/api/allEntries', (req, res) => {
             console.log(err);
         })
 });
+
+app.get('/api/allMessages', (req, res) => {
+    console.log("Inside of /api/allMessages");
+    Message.find()
+        .then((result) => {
+            // console.log(result);
+            messageArray = [];
+            //go through each message and extract text
+            result.forEach((doc)=> {
+                messageArray.push(doc.message)
+            })
+            // console.log(messageArray);
+            // res.send(result);
+            res.send(messageArray);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+});
+
+

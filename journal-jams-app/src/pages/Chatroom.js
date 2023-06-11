@@ -6,6 +6,7 @@ const Chatroom = (props) => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    
     props.socket.on('chat message', (message) => {
       setMessages([...messages, message]);
     });
@@ -16,9 +17,20 @@ const Chatroom = (props) => {
     }
   }, [props.socket, messages]);
 
+  useEffect(() => {
+    fetch('/api/allMessages', {method:"GET"})
+      // .then(response => response.json())
+      .then((response) => {
+        setMessages(response)
+        console.log(response)
+      })
+      .catch(err => console.log(err));
+  }, []);
+
   const handleSendChat = () => {
     if (text.trim() !== '') {
-      props.sendChat(text);
+      console.log("In handle sent chat ", props.roomInfo); //undefined
+      props.sendChat(text, props.roomInfo);
       setText('');
     }
   }
@@ -27,9 +39,9 @@ const Chatroom = (props) => {
     <Box sx={{ backgroundColor:'#F0F0F0'}}> 
     {/*<span className="myClass" style={{float : 'left', paddingRight : '5px'}} > </span> */}
       <ul>
-        {messages.map((message, index) => (
+        {/* {messages.map((message, index) => (
           <li key={index}>{message}</li>
-        ))}
+        ))} */}
       </ul>
       <TextField
         id="text"

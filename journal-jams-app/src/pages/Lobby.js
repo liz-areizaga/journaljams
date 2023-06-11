@@ -1,15 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import './Pages.css';
 import NavBar from "../Components/NewNavbar/Navbar"
 import { Box, Button, Modal } from '@mui/material';
 import { io } from 'socket.io-client';
 import Chatroom from './Chatroom';
+import { UserContext } from "../contexts/user.context";
+
 
 const Lobby = () => {
-  const [roomInfo, setRoomInfo] = useState({ userName: "default", room: "default" });
+  const [roomInfo, setRoomInfo] = useState({ username: "default", room: "default" });
   const [socket, setSocket] = useState(undefined);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [createdRooms, setCreatedRooms] = useState([]);
+
+  const { user, fetchUser, emailPasswordLogin } = useContext(UserContext);
+
+//   const loadUser = async () => {
+//     const currentUser = await fetchUser().then(console.log("User", roomInfo.username));
+//     if (currentUser) {
+//             console.log("Current user ", currentUser._profile.data.email);
+//             setRoomInfo({ username: currentUser._profile.data.email});
+//             // console.log("User", roomInfo.username);
+//     }
+//   }
 
   const roomSelect = (room, userName) => {
     socket.emit("join", { room, userName });
@@ -24,7 +37,15 @@ const Lobby = () => {
     socket.emit('createRoom', newRoom);
   }
 
-  const sendChat = (text) => {
+  const sendChat = (text, roomInfo) => {
+    console.log("in sendChat", roomInfo);
+    fetch('/api/newMessage', {
+        method:"POST",
+        body: JSON.stringify({username: roomInfo.username, room: roomInfo.room, message: text}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
     console.log("in front", text);
     socket.emit("chat message", text);
   }
@@ -39,7 +60,8 @@ const Lobby = () => {
   }, []);
 
   const handleCloseModal = () => {
-    setChatModalOpen(false);
+        console.log("In close modal", roomInfo.username);
+        setChatModalOpen(false);
   }
 
   return (
@@ -54,14 +76,14 @@ const Lobby = () => {
         <Box className="lobby-container">
           {/* Display created room buttons */}
           {createdRooms.map((room, index) => (
-            <Button key={index} onClick={() => roomSelect(room, "John")}>
+            <Button key={index} onClick={() => roomSelect(room, roomInfo.username)}>
               {room}
             </Button>
           ))}
 
           {/* Chat Room Modal */}
           <Modal open={chatModalOpen} onClose={handleCloseModal}>
-            <Chatroom socket={socket} sendChat={sendChat} goBack={handleCloseModal} />
+            <Chatroom socket={socket} roomInfo={roomInfo} sendChat={sendChat} goBack={handleCloseModal} />
           </Modal>
         </Box>
       </Box>
