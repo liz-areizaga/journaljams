@@ -52,7 +52,7 @@ const Friends = () => {
     }
   };
 
-  useEffect(() => () => { handleFetchUser();}, );
+  useEffect(() => () => { handleFetchUser();}, []);
 
   const filterData = (query, data) => {
     if (!query) {

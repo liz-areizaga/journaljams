@@ -35,7 +35,7 @@ const Chatroom = (props) => {
   useEffect(() => {
     handleFetchUser();
     handleFetchMessages();
-  }, );
+  }, []);
 
   useEffect(() => {
     props.socket.on('chat message', (message) => {

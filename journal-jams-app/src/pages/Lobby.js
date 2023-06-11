@@ -90,7 +90,7 @@ const Lobby = () => {
     handleFetchUser();
     setSocket(io('http://localhost:1234'));
     console.log("set up socket in front end");
-  }, );
+  }, []);
 
   const handleCloseModal = () => {
         console.log("In close modal: ", currentUser);

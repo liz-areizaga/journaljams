@@ -48,7 +48,7 @@ const Entries = () => {
 
   useEffect(() => {
     handleFetchUser();
-  }, );
+  },[]);
 
   const handleEntryClick = (entry) => {
     setSelectedEntry(entry);
