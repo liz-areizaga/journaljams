@@ -21,8 +21,21 @@ const Entries = () => {
   }
 
   const getMood = () => {
-    const currMood = main(document.getElementById("entry").value);
-    setMood(currMood);
+    main(document.getElementById("entry").value).then((result)=> {
+        setMood(result);
+        fetch('/api/newEntry', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            title: document.getElementById('title').value,
+            entry: document.getElementById('entry').value,
+            mood: result
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+    })
+    });
+    // console.log(currMood.result)
   };
 
   return (
@@ -40,7 +53,7 @@ const Entries = () => {
             >
           <button id="modal-close" onClick={closeModal}>X</button>
               <h2>New Entry</h2>
-              <form id="new-entry-form" action='http://localhost:1234/api/newEntry' method="POST">
+              <form id="new-entry-form">
                 <div className="form-group">
                   <label className="modal-labels" htmlFor="exampleInputPassword1">Title</label>
                   <input className="form-control" name="title" id="title"/>

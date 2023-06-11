@@ -96,10 +96,11 @@ app.post('/api/newUser/:email', (req, res) => { //add the newEntry to the DB
 
 
 app.post('/api/newEntry', (req, res) => { //add the newEntry to the DB
+    console.log(req.body.mood);
     const new_entry = new Entry({
         title: req.body.title,
         text: req.body.entry,
-        mood: "happy" //placeholder-- TODO: set to predicted mood
+        mood: req.body.mood
     });
 
     new_entry.save()

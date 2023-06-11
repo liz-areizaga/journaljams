@@ -75,8 +75,19 @@ async function getAccessToken() { //Adapted from https://developer.spotify.com/d
 export async function main(userText){
   // console.log(userText);
   const emotion = classifyText(userText);
+  if (emotion == "Happy"){
+    return "Happy"
+  }
+  else if (emotion == "Sad"){
+    return "Sad"
+  }
+  else if (emotion == "Anger"){
+    return "Anger"
+  }
+  else{
+    return "Neutral"
+  }
   // console.log('Emotion:', emotion);
-  return emotion
   // let rangeValence;
   // let rangeEnergy;
   // let sortValue;
