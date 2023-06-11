@@ -1,20 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const messagesSchema = new Schema({ //store messages by RoomID, then get messages filter through room ID and display in timestamp order
-    room: { //room msg was sent in
-        type: String,
-        required: true
+const messagesSchema = new Schema({
+    room: {
+      type: String,
+      required: true
     },
-    message: { //msg sent
+    messages: [{
+      user: { // user that sent the message
         type: String,
         required: true
-    }
-    // user: { //user that sent the msg
-    //     type: String,
-    //     required: true,
-    // }
-}, {timestamps: true})
+      },
+      message: { // the actual message
+        type: String,
+        required: true
+      }
+    }]
+  }, { timestamps: true });
 
 const Message = mongoose.model('Message', messagesSchema);
 module.exports = Message;

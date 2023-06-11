@@ -1,66 +1,99 @@
-import React, { useEffect, useState, useContext  } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import './Pages.css';
 import NavBar from "../Components/NewNavbar/Navbar"
-import { Box, Button, Modal } from '@mui/material';
+import { Box, Button, Modal, TextField} from '@mui/material';
 import { io } from 'socket.io-client';
 import Chatroom from './Chatroom';
 import { UserContext } from "../contexts/user.context";
 
 
 const Lobby = () => {
-  const [roomInfo, setRoomInfo] = useState({ username: "default", room: "default" });
+  const [currentUser, setCurrentUser] = useState("");
+  const [currentRoom, setCurrentRoom] = useState("");
   const [socket, setSocket] = useState(undefined);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [createdRooms, setCreatedRooms] = useState([]);
-
   const { user, fetchUser, emailPasswordLogin } = useContext(UserContext);
+  var selectedRoom = "";
 
-//   const loadUser = async () => {
-//     const currentUser = await fetchUser().then(console.log("User", roomInfo.username));
-//     if (currentUser) {
-//             console.log("Current user ", currentUser._profile.data.email);
-//             setRoomInfo({ username: currentUser._profile.data.email});
-//             // console.log("User", roomInfo.username);
-//     }
-//   }
+  const handleFetchUser = async () => {
+    try {
+      const fetchedUser = await fetchUser();
+      if(fetchedUser) { console.log("Current User:", fetchedUser.profile.email); 
+        setCurrentUser(fetchedUser.profile.email);
+        fetchUserRooms(fetchedUser.profile.email);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  
+  const fetchUserRooms = (user) => {
+    fetch(`/api/allRooms/${user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("User's Rooms: " + data.rooms);
+        // Update the createdRooms state with the received data
+        setCreatedRooms(data.rooms);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const roomSelect = (room, userName) => {
+    selectedRoom = room;
+    setCurrentRoom(room);
     socket.emit("join", { room, userName });
-    setRoomInfo({ userName, room });
+    // console.log("In room select: " + room);    
     setChatModalOpen(true);
   }
 
   const createRoom = (name) => {
     document.getElementById("room-name-input").value ="";
     const newRoom = `Room ${name}`;
-    setCreatedRooms([...createdRooms, newRoom]);
-    socket.emit('createRoom', newRoom);
+    if(!createdRooms.includes(newRoom)) {
+      setCreatedRooms([...createdRooms, newRoom]);
+      socket.emit('createRoom', newRoom);
+      fetch(`/api/newRoom/${currentUser}/${newRoom}`, {
+        method: 'POST',
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Sent your room to the DB!', data);
+        })
+        .catch((error) => {
+          console.log(error);
+        }); 
+    }
   }
 
-  const sendChat = (text, roomInfo) => {
-    console.log("in sendChat", roomInfo);
+  const sendChat = (text) => {
+    // console.log("in sendChat: ", selectedRoom);
     fetch('/api/newMessage', {
         method:"POST",
-        body: JSON.stringify({username: roomInfo.username, room: roomInfo.room, message: text}),
+        body: JSON.stringify({username: currentUser, room: currentRoom, message: text}),
         headers: {
             'Content-Type': 'application/json'
         }
     })
     console.log("in front", text);
-    socket.emit("chat message", text);
+    socket.emit("chat message", {user: currentUser, message: text});
   }
 
   const handleChange = (e) => {
-    setRoomInfo({room: e.target.value});
+    selectedRoom = e.target.value;
+    setCurrentRoom(e.target.value);
   }
 
   useEffect(() => {
+    handleFetchUser();
     setSocket(io('http://localhost:1234'));
     console.log("set up socket in front end");
   }, []);
 
   const handleCloseModal = () => {
-        console.log("In close modal", roomInfo.username);
+        console.log("In close modal: ", currentUser);
         setChatModalOpen(false);
   }
 
@@ -68,24 +101,42 @@ const Lobby = () => {
     <>
       <NavBar />
       <Box className="lobby-wrapper">
-      <Box>
-          <input type='text' id='room-name-input' onChange={handleChange}/>
+      <Box  sx={{marginLeft: "10px", marginTop: "10px"}}>
+          {/* <input type='text' id='room-name-input' onChange={handleChange}/> */}
+          <TextField id="room-name-input" label="Enter Room Name" variant="outlined" onChange={handleChange}/>
           {/* {let name = document.getElementById("room-name-input").value;} */}
-          <Button onClick={() => createRoom(roomInfo.room)}>Create Room</Button>
+          <Button variant="contained" onClick={() => createRoom(document.getElementById("room-name-input").value)} sx={{marginLeft: "10px", marginTop: "10px"}} >Create Room</Button>
         </Box>
-        <Box className="lobby-container">
-          {/* Display created room buttons */}
-          {createdRooms.map((room, index) => (
-            <Button key={index} onClick={() => roomSelect(room, roomInfo.username)}>
-              {room}
-            </Button>
-          ))}
-
-          {/* Chat Room Modal */}
-          <Modal open={chatModalOpen} onClose={handleCloseModal}>
-            <Chatroom socket={socket} roomInfo={roomInfo} sendChat={sendChat} goBack={handleCloseModal} />
-          </Modal>
-        </Box>
+          <Box className="lobby-container">
+            {/* Display created room buttons */}
+            {createdRooms.map((room, index) => (
+              <Button sx={{marginLeft:"10px", marginTop: "10px"}} variant="contained" key={index} onClick={() => roomSelect(room, currentUser)}>
+                {room}
+              </Button>              
+            ))}
+            {/* Chat Room Modal */}
+          </Box>
+            <Modal open={chatModalOpen} onClose={handleCloseModal} 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Box
+                sx={{
+                  backgroundColor: 'white',
+                  border: '1px solid black',
+                  borderRadius: '4px',
+                  outline: 'none',
+                  width: '90%',
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
+                  p: 2,
+                }}
+              >
+                <Chatroom socket={socket} room={currentRoom} sendChat={sendChat} goBack={handleCloseModal} />
+              </Box>
+            </Modal>
       </Box>
     </>
   );

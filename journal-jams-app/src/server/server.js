@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Entry = require('../Models/Entries'); 
 const User = require('../Models/UserInfo');
 const Message = require('../Models/Messages');
+const userRoom = require('../Models/Rooms');
 const path = require('path');
 const dotenv = require('dotenv');
 const bodyParser = require( 'body-parser');
@@ -114,22 +115,72 @@ app.post('/api/newEntry', (req, res) => { //add the newEntry to the DB
 });
 
 app.post('/api/newMessage', (req, res) => {
-    // console.log('/api/newMessage');
-    const new_message = new Message({
-        room: req.body.room,
-        message: req.body.message
-        // user: req.body.username,
-    });
+    const room = req.body.room;
+    const userName = req.body.username; // Corrected typo in "username" variable name
+    const message = req.body.message;
+  
+    // Find the document for the specified room
+    Message.findOne({ room: room })
+      .then((foundMessage) => {
+        if (foundMessage) {
+          // Append the new message to the existing messages array
+          foundMessage.messages.push({
+            user: userName,
+            message: message
+          });
+  
+          // Save the updated document
+          return foundMessage.save();
+        } else {
+          // If the document for the specified room doesn't exist, create a new one
+          const newMessage = new Message({
+            room: room,
+            messages: [{
+              user: userName,
+              message: message
+            }]
+          });
+  
+          // Save the new document
+          return newMessage.save();
+        }
+      })
+      .then(() => {
+        console.log("Sent your message to the DB!");
+        res.status(200).json({ message: 'Message saved successfully' });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to save the message' });
+      });
+  });
 
-    new_message.save()
-        .then((result) => {
-            console.log("Sent your message to the DB!");
-            console.log(new_message);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-})
+  app.post('/api/newRoom/:user/:room', (req, res) => {
+    console.log("Inside of /api/newRoom/:user/:room");
+    const { user, room } = req.params;
+    userRoom.findOne({ user })
+      .then((userDoc) => {
+        if (userDoc) {
+          // Check if the room already exists in the user's rooms array
+          if (userDoc.rooms.includes(room)) {
+            throw new Error("Room already exists for the user");
+          }
+          userDoc.rooms.push(room); // Append the new room to the existing rooms array
+          return userDoc.save(); // Save the updated user document
+        } else {
+          return userRoom.create({ user, rooms: [room] }); // Create a new user document with the new room
+        }
+      })
+      .then((result) => {
+        console.log("Sent your room to the DB!");
+        res.send(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
+  
 
 app.get('/api/allEntries', (req, res) => {
     console.log("Inside of /api/allEntries");
@@ -143,23 +194,32 @@ app.get('/api/allEntries', (req, res) => {
         })
 });
 
-app.get('/api/allMessages', (req, res) => {
-    console.log("Inside of /api/allMessages");
-    Message.find()
+app.get('/api/allMessages/:room', (req, res) => { //get messages of specific room
+    console.log("Inside of /api/allMessages/:room");
+    const room = req.params.room;
+    Message.findOne({room: room}, {'messages.user': 1, 'messages.message': 1})
         .then((result) => {
-            // console.log(result);
-            messageArray = [];
-            //go through each message and extract text
-            result.forEach((doc)=> {
-                messageArray.push(doc.message)
-            })
-            // console.log(messageArray);
-            // res.send(result);
-            res.send(messageArray);
+            console.log(result.messages);
+            res.send(result.messages);
         })
         .catch((err) => {
             console.log(err);
         })
 });
+
+app.get('/api/allRooms/:user', (req, res) => {
+    console.log("Inside /api/allRooms/:user");
+    const user = req.params.user;
+    userRoom.findOne({ user: user }, { rooms: 1 })
+      .then((result) => {
+        console.log(result);
+        res.send(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+    });
+});
+  
 
 
