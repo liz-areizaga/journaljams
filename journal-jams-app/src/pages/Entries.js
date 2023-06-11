@@ -114,8 +114,8 @@ const Entries = () => {
         .catch((error) => {
           console.error('Error submitting entry:', error);
           alert(error);
-        });
-    }
+        })
+      })
   };  
 
   return (
@@ -133,6 +133,7 @@ const Entries = () => {
           ariaHideApp={false}
           onRequestClose={closeModal}
           contentLabel="Example Modal"
+          >
           <Typography variant="h4" gutterBottom> New Entry </Typography>
           {/* <form id="new-entry-form" action='http://localhost:1234/api/newEntry' method="POST"> */}
           <form id="new-entry-form" onSubmit={onSubmit}>
