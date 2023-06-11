@@ -4,10 +4,12 @@ import { Box, Button } from '@mui/material';
 import {useState } from "react";
 import Modal from 'react-modal';
 import { useEffect } from 'react';
+import {main} from '../pages_2/SpotifyNLP.js';
 
 const Entries = () => {
   const [newEntryFlag, setnewEntryFlag] = useState(false);
   const [entries, setEntries] = useState([]);
+  const [mood, setMood] = useState('');
 
   function openModal() {
     setnewEntryFlag(true);
@@ -17,6 +19,11 @@ const Entries = () => {
     setnewEntryFlag(false);
     window.location.reload(true);
   }
+
+  const getMood = () => {
+    const currMood = main(document.getElementById("entry").value);
+    setMood(currMood);
+  };
 
   return (
     <>
@@ -43,7 +50,8 @@ const Entries = () => {
                   <label className="modal-labels" htmlFor="exampleInputPassword1">Entry</label>
                   <textarea className="form-control" name="entry" id="entry"/>
                 </div>
-                <button type="submit" class="btn-primary">Submit</button>
+              {/* <button type="submit" class="btn-primary" onClick={()=>{console.log(document.getElementById("entry").value);}}>Submit</button> */}
+              <button type="submit" class="btn-primary" onClick={getMood}>Submit</button>
               </form>
       </Modal>
         <Box className="my-entries-container">

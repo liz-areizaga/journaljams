@@ -15,7 +15,7 @@ function classifyText(text) {
   var stemmedWords = tokenizeAndStemText(text); 
   var emotionScores = {};
 
-  for (var emotion of Object.keys(emotions)) {
+  for (const emotion of Object.keys(emotions)) {
     emotionScores[emotion] = 0; //Initialize all emotions to have 0 count
     for (var word of stemmedWords) { //For every word in the text
       if (emotions[emotion].includes(word)) //If that word is in a emotion category
@@ -24,7 +24,7 @@ function classifyText(text) {
   }
   let maxScore = -1;
   let userEmotion;
-  for (var emotion of Object.keys(emotionScores)) { //Go through scores
+  for (const emotion of Object.keys(emotionScores)) { //Go through scores
     if (emotionScores[emotion] > maxScore) { //Find the emotion with the highest score
       userEmotion = emotion;
       maxScore = emotionScores[emotion];
@@ -57,10 +57,10 @@ async function searchTracks(valence, energy, sortFeature) {
 }
 
 async function getAccessToken() { //Adapted from https://developer.spotify.com/documentation/web-api/tutorials/client-credentials-flow
-  var authOptions = await fetch("https://accounts.spotify.com/api/token", {
+  var authOptions = await fetch("https://accounts.spotify.com/api/token/", {
     method: 'POST',
     headers: {
-      'Authorization': 'Basic ' + (new Buffer.from(process.env.CLIENT_ID + ':' + process.env.CLIENT_SECRET, 'binary').toString('base64')),
+      'Authorization': 'Basic ' + (new Buffer.from(process.env.CLIENT_ID + ":" + process.env.CLIENT_SECRET , 'binary').toString('base64')),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: 'grant_type=client_credentials',
@@ -72,44 +72,45 @@ async function getAccessToken() { //Adapted from https://developer.spotify.com/d
   return data.access_token;
 }
 
-async function main(userText){
-  console.log(userText);
+export async function main(userText){
+  // console.log(userText);
   const emotion = classifyText(userText);
-  console.log('Emotion:', emotion);
-  let rangeValence;
-  let rangeEnergy;
-  let sortValue;
-  if (emotion == "Happy"){
-    rangeValence = [0.9,1.0]
-    rangeEnergy = [0.4,0.6]
-    sortValue = 'valence'
-  }
-  else if (emotion == "Sad"){
-    rangeValence = [0.0,0.1]
-    rangeEnergy = [0.0,0.1]
-    sortValue = 'valence'
-  }
-  else if (emotion == "Anger"){
-    rangeValence = [0.4,0.6]
-    rangeEnergy = [0.9,1.0]
-    sortValue = 'energy'
-  }
-  else{
-    rangeValence = [0.5,0.5]
-    rangeEnergy = [0.5,0.5]
-    sortValue = 'valence'
-  }
-  searchTracks(rangeValence, rangeEnergy, sortValue)
-    .then((songs) => {
-      songs.forEach((song, index) => {
-        console.log(`${index + 1}. ${song.song} - ${song.artist}`);
-        console.log(`External URLs:`);
-        Object.entries(song.externalUrls).forEach(([name, url]) => {
-          console.log(`- ${name}: ${url}`);
-        });
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  // console.log('Emotion:', emotion);
+  return emotion
+  // let rangeValence;
+  // let rangeEnergy;
+  // let sortValue;
+  // if (emotion == "Happy"){
+  //   rangeValence = [0.9,1.0]
+  //   rangeEnergy = [0.4,0.6]
+  //   sortValue = 'valence'
+  // }
+  // else if (emotion == "Sad"){
+  //   rangeValence = [0.0,0.1]
+  //   rangeEnergy = [0.0,0.1]
+  //   sortValue = 'valence'
+  // }
+  // else if (emotion == "Anger"){
+  //   rangeValence = [0.4,0.6]
+  //   rangeEnergy = [0.9,1.0]
+  //   sortValue = 'energy'
+  // }
+  // else{
+  //   rangeValence = [0.5,0.5]
+  //   rangeEnergy = [0.5,0.5]
+  //   sortValue = 'valence'
+  // }
+  // searchTracks(rangeValence, rangeEnergy, sortValue)
+  //   .then((songs) => {
+  //     songs.forEach((song, index) => {
+  //       console.log(`${index + 1}. ${song.song} - ${song.artist}`);
+  //       console.log(`External URLs:`);
+  //       Object.entries(song.externalUrls).forEach(([name, url]) => {
+  //         console.log(`- ${name}: ${url}`);
+  //       });
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     console.error(error);
+  //   });
 }
