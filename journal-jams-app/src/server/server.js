@@ -401,38 +401,52 @@ app.get('/api/userfriendList/:email', (req, res) => {
       });
   });
 
-  app.put('/api/upVote/:comment_text', (req, res) => {
-    const commentText = req.params.comment_text;
-    console.log(commentText);
-    Comment.updateMany(
-      { "comments.comment": commentText},
-      { $inc: { "comments.$.rating": 1 } },
-      {multi: true}
-    ).then((doc) => {
-      console.log(doc);
-      console.log("Updated your comment on the DB!");
-        res.status(200).json({ message: 'Comment updated successfully' });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: 'Failed to update the comment' });
-      });
-    // Comment.findOne(
-    //   {entry_id: entryId },
-    //   {
-    //     'comments.$[outer].$[inner].user': 1,
-    //     'comments.$[outer].$[inner].comment': 1,
-    //     'comments.$[outer].$[inner].rating': 1
-    //   },
-    //   {
-    //     arrayFilters: [
-    //       { 'outer._id': entryId },
-    //       { 'inner._id': commentId }
-    //     ]
-    //   }).then(
+  app.put('/api/upVote/:entry_id/:index', (req, res) => {
+    const entryId = req.params.entry_id;
+    const index = req.params.index;
+    Comment.findOne(
+      {entry_id: entryId }).then((doc) => {
+        console.log(doc.comments[index]._id)
+        const comment_id = doc.comments[index]._id;
+          Comment.updateMany(
+            { "comments._id": comment_id},
+            { $inc: { "comments.$.rating": 1 } },
+            {new: true}
+          ).then((comment) => {
+              console.log(comment);
+              console.log("Updated your comment on the DB!");
+              res.status(200).json({ message: 'Comment updated successfully' });
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: 'Failed to update the comment' });
+            });
+      }
+      )
+  })
 
-    //   )
-      // {'comments.user': 1, 'comments.comment': 1, 'comments.rating': 1})
+  app.put('/api/downVote/:entry_id/:index', (req, res) => {
+    const entryId = req.params.entry_id;
+    const index = req.params.index;
+    Comment.findOne(
+      {entry_id: entryId }).then((doc) => {
+        console.log(doc.comments[index]._id)
+        const comment_id = doc.comments[index]._id;
+          Comment.updateMany(
+            { "comments._id": comment_id},
+            { $inc: { "comments.$.rating": -1 } },
+            {new: true}
+          ).then((comment) => {
+              console.log(comment);
+              console.log("Updated your comment on the DB!");
+              res.status(200).json({ message: 'Comment updated successfully' });
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: 'Failed to update the comment' });
+            });
+      }
+      )
   })
     
   

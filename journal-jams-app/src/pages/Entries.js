@@ -15,7 +15,7 @@ const Entries = () => {
   const [newEntryFlag, setNewEntryFlag] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [mood, setMood] = useState('');
   const [comments, setComments] = useState([]) 
@@ -29,9 +29,8 @@ const Entries = () => {
       }
     ]);
   
-  const increase = (entry_id, comment_text) => {
-    console.log(comment_text);
-    fetch(`/api/upVote/${comment_text}`, { method: "PUT" })
+  const increase = (entry_id, index) => {
+    fetch(`/api/upVote/${entry_id}/${index}`, { method: "PUT" })
       .then((response) => {
         if (response.ok) {
           console.log('Comment updated successfully');
@@ -39,11 +38,17 @@ const Entries = () => {
           throw new Error('Failed to update comment');
         }
       })
-      setVote(vote + 1);
   };
   
-  const decrease = () => {
-      setVote(vote - 1);
+  const decrease = (entry_id, index) => {
+    fetch(`/api/downVote/${entry_id}/${index}`, { method: "PUT" })
+    .then((response) => {
+      if (response.ok) {
+        console.log('Comment updated successfully');
+      } else {
+        throw new Error('Failed to update comment');
+      }
+    })
   };
   const handleFetchUser = async () => {
     try {
@@ -88,6 +93,7 @@ const Entries = () => {
 
   const handleEntryClick = (entry) => {
     setSelectedEntry(entry);
+    setComments([]);
     setIsModalOpen(true);
     handleFetchComments(entry.id);
   };
@@ -267,12 +273,12 @@ const Entries = () => {
                   />
                     <Box id = "arrow_container" style={{marginTop:'12px'}}>
                     <Stack direction="column" spacing = {2}>
-                        <IconButton id = "arrows" onClick = {() => {increase(selectedEntry.id, comment.comment)}}>
+                        <IconButton id = "arrows" onClick = {() => {increase(selectedEntry.id, i)}}>
                             <KeyboardArrowUpIcon/> 
                         </IconButton>
                         {console.log(comment.rating)}
                         <span id="vote" >{comment.rating}</span>
-                        <IconButton id = "arrows" onClick = {decrease}>
+                        <IconButton id = "arrows" onClick = {() => {decrease(selectedEntry.id, i)}}>
                             <KeyboardArrowDownIcon /> 
                         </IconButton>
                     </Stack>
