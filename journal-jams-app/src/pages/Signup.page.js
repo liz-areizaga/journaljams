@@ -33,18 +33,15 @@ const Signup = () => {
     const onSubmit = async () => {
       try {
         await emailPasswordSignup(form.email, form.password);
-        // fetch(`/api/newUser/${form.email}`, {
-        //   method: "POST",
-        //   body: JSON.stringify({ email: form.email }),
-        //   headers: {
-        //     'Content-Type': 'application/json'
-        //   }
-        // })
-        // .then(response => { 
         redirectNow();
-        // });
       } catch (error) {
-        alert("Error or Confirmation Email Sent");
+        const errorText = error.message;
+        const regexPattern = /Request failed (.*): /;
+        const match = errorText.match(regexPattern);
+        if (match) {
+          const capturedText = errorText.replace(match[0], "").trim();
+          alert(capturedText);
+        }
       }
     };
 

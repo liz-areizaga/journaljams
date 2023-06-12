@@ -82,6 +82,7 @@ const emailConfirmUser = async (token, tokenId) => {
      // the user using the same credentials once the signup is complete.
      return emailPasswordLogin(email, password);
    } catch (error) {
+    //  console.log("In user.context error: ", error );
      throw error;
    }
  };
