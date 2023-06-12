@@ -1,6 +1,6 @@
 import { UserContext } from '../contexts/user.context';
 import NavBar from "../Components/NewNavbar/Navbar";
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography} from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
 
 const Profile = () => {
@@ -15,7 +15,13 @@ const Profile = () => {
       if (fetchedUser) {
         console.log("Current User:", fetchedUser.profile.email);
         setCurrentUser(fetchedUser.profile.email);
-        setAboutMe(fetchedUser.aboutme); // Set the aboutMe state based on the fetched user's aboutme
+        fetch(`/api/getUserInfo/${fetchedUser.profile.email}`, {method:"GET"})
+        .then(response => response.json())
+        .then((jsonRes) => {
+          setAboutMe(jsonRes.aboutMe);
+          setBirthday(jsonRes.birthday);
+        });            
+        // setAboutMe(fetchedUser.aboutme); // Set the aboutMe state based on the fetched user's aboutme
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -95,6 +101,9 @@ const Profile = () => {
     <Box className="my-profile-wrapper">
       <NavBar />
       <h1 style={{ marginLeft: "10px" }}>{currentUser}'s Profile</h1>
+      <Typography variant="h5" gutterBottom> About Me: <Typography variant="h6"> {aboutMe || "About Me is not set"} </Typography> </Typography>
+      <Typography variant="h5" gutterBottom> Birthday: <Typography variant="h6"> {birthday || "Birthday is not set"} </Typography> </Typography>
+
       <TextField
         label="About Me"
         variant="outlined"
