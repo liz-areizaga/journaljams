@@ -37,27 +37,45 @@ const Friends = () => {
   var templist = [];
   var tempSelectedFriend = "";
 
-  const increase = (entry_id, index) => {
-    fetch(`/api/upVote/${entry_id}/${index}`, { method: "PUT" })
+  const increase = async (entry_id, index) => {
+    await fetch(`/api/upVote/${entry_id}/${index}`, { method: "PUT" })
       .then((response) => {
         if (response.ok) {
           console.log('Comment updated successfully');
         } else {
           throw new Error('Failed to update comment');
         }
-      })
+      });
+  
+    await fetch(`/api/getVote/${entry_id}/${index}`, { method: "GET" })
+      .then(response => response.json())
+      .then((jsonRes) => {
+        const updatedComments = [...comments];
+        updatedComments[index].rating = jsonRes.rating;
+        setComments(updatedComments);
+        console.log("Current Vote: " +  jsonRes.rating);
+      });
   };
   
-  const decrease = (entry_id, index) => {
-    fetch(`/api/downVote/${entry_id}/${index}`, { method: "PUT" })
-    .then((response) => {
-      if (response.ok) {
-        console.log('Comment updated successfully');
-      } else {
-        throw new Error('Failed to update comment');
-      }
-    })
-  };
+  const decrease = async (entry_id, index) => {
+    await fetch(`/api/downVote/${entry_id}/${index}`, { method: "PUT" })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Comment updated successfully');
+        } else {
+          throw new Error('Failed to update comment');
+        }
+      });
+  
+    await fetch(`/api/getVote/${entry_id}/${index}`, { method: "GET" })
+      .then(response => response.json())
+      .then((jsonRes) => {
+        const updatedComments = [...comments];
+        updatedComments[index].rating = jsonRes.rating;
+        setComments(updatedComments);
+        console.log("Current Vote: " +  jsonRes.rating);
+      });
+  }; 
 
   const handleFetchUser = async () => {
     try {
