@@ -1,39 +1,46 @@
 import { UserContext } from '../contexts/user.context';
-import { useContext } from 'react';
-import {Box} from '@mui/material';
+import React, { useState , useEffect, useContext} from 'react';
+import {Box, Button} from '@mui/material';
 import NavBar from "../Components/NewNavbar/Navbar"
  
-const Profile = () => {
+const Account = () => {
+  const [currentUser, setCurrentUser] = useState("");
+  const { fetchUser, emailSendPasswordReset} = useContext(UserContext);
 
-    const { changePassword } = useContext(UserContext);
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      const oldPassword = e.target.elements.oldPassword.value;
-      const newPassword = e.target.elements.newPassword.value;
-  
-      try {
-        await changePassword(oldPassword, newPassword);
-        console.log("Password changed successfully");
-        // Password changed successfully
-      } catch (error) {
-        // Handle error
+  const handleFetchUser = async () => {
+    try {
+      const fetchedUser = await fetchUser();
+      if(fetchedUser) {
+        console.log("Current User:", fetchedUser.profile.email);
+        setCurrentUser(fetchedUser.profile.email);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
 
-    return (
-        <>
-            <NavBar />
-                <Box>                
-                    <form onSubmit={handleSubmit}>
-                        <input  name="oldPassword" placeholder="Old Password" />
-                        <input  name="newPassword" placeholder="New Password" />
-                        <button type="submit">Change Password</button>
-                    </form>
-                </Box>
-        </>
-    );
+  const onSubmit = async () => {
+    try {
+      await emailSendPasswordReset(currentUser);
+      alert("Password reset email sent!");
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchUser();
+  }, []);
+
+  return (
+      <>
+        <NavBar />
+        <Box>                
+            <Button variant="contained" sx={{margin:"10px"}} onClick={onSubmit}> Reset Password </Button>
+        </Box>
+      </>
+  );
 };
 
-export default Profile;
+export default Account;
 

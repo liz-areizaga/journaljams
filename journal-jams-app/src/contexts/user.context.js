@@ -11,13 +11,67 @@ export const UserContext = createContext();
  
 export const UserProvider = ({ children }) => {
  const [user, setUser] = useState(null);
- 
+
+//send Email to user to reset password
+const emailSendPasswordReset = async (email) => {
+  try {
+    await app.emailPasswordAuth.sendResetPasswordEmail(email);
+    console.log("Password reset email sent successfully");
+  } catch (error) {
+    throw error;
+  }
+};
+
+//changePassword
+const emailPasswordReset = async (token, tokenId, newPassword) => {
+  try {
+    await app.emailPasswordAuth.resetPassword({
+      password: newPassword, 
+      token, 
+      tokenId
+    });
+    console.log("Password reset successfully");
+  } catch (error) {
+    throw error;
+  }
+};
+
+//send Email to user to confirm email
+const emailResendConfirm = async (email) => {
+  try {
+    await app.emailPasswordAuth.resendConfirmationEmail({email});
+    console.log("Password reset email sent successfully");
+  } catch (error) {
+    throw error;
+  }
+};
+
+//confirm user
+const emailConfirmUser = async (token, tokenId) => {
+  try {
+    await app.emailPasswordAuth.confirmUser({
+      token, 
+      tokenId
+    });    
+    console.log("user confirmed successfully");
+  } catch (error) {
+    throw error;
+  }
+};
+
  // Function to log in user into our App Service app using their email & password
  const emailPasswordLogin = async (email, password) => {
-   const credentials = Credentials.emailPassword(email, password);
-   const authenticatedUser = await app.logIn(credentials);
-   setUser(authenticatedUser);
-   return authenticatedUser;
+    const credentials = Credentials.emailPassword(email, password);
+    const authenticatedUser = await app.logIn(credentials);
+    fetch(`/api/newUser/${email}`, {
+      method: "POST",
+      body: JSON.stringify({ email: email }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    setUser(authenticatedUser);
+    return authenticatedUser;
  };
  
  // Function to sign up user into our App Service app using their email & password
@@ -58,22 +112,8 @@ export const UserProvider = ({ children }) => {
      throw error
    }
  }
- 
-  // Function to change the user's password
-  const changePassword = async (oldPassword, newPassword) => {
-    if (!app.currentUser) return false;
-    try {
-      // const credentials = Credentials.emailPassword(app.currentUser.profile.email, oldPassword);
-      // await app.emailPasswordAuth.resetPassword({password: newPassword}, token, tokenId);
-      // await app.currentUser?.linkCredentials(credentials, app.emailPasswordAuth.resetPassword(newPassword));
-      console.log("CHANGE PASSWORD FUNCTION TO BE IMPLEMENTED");
-      return true;
-    } catch (error) {
-      throw error;
-    }
-  };
 
- return <UserContext.Provider value={{ user, setUser, fetchUser, emailPasswordLogin, emailPasswordSignup, logOutUser, changePassword}}>
+ return <UserContext.Provider value={{ user, setUser, fetchUser, emailPasswordLogin, emailPasswordSignup, logOutUser, emailPasswordReset, emailSendPasswordReset, emailResendConfirm, emailConfirmUser}}>
    {children}
  </UserContext.Provider>;
 }

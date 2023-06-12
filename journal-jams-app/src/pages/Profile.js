@@ -1,43 +1,123 @@
-// import React from 'react';
-import NavBar from "../Components/NewNavbar/Navbar"
-import axios from 'axios';
-import { Box, Button } from '@mui/material';
-import { useState } from "react";
+import { UserContext } from '../contexts/user.context';
+import NavBar from "../Components/NewNavbar/Navbar";
+import { Box, Button, TextField } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
 
 const Profile = () => {
-	const [selectedImage, setSelectedImage] = useState(null);
+  const [currentUser, setCurrentUser] = useState("");
+  const [aboutMe, setAboutMe] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const { fetchUser, emailSendPasswordReset } = useContext(UserContext);
 
-	const handleImageChange = (event) => {
-	setSelectedImage(event.target.files[0]);
-	};
+  const handleFetchUser = async () => {
+    try {
+      const fetchedUser = await fetchUser();
+      if (fetchedUser) {
+        console.log("Current User:", fetchedUser.profile.email);
+        setCurrentUser(fetchedUser.profile.email);
+        setAboutMe(fetchedUser.aboutme); // Set the aboutMe state based on the fetched user's aboutme
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
 
-	const handleImageUpload = async () => {
+  useEffect(() => {
+    handleFetchUser();
+  }, []);
+
+  const handleAboutMeChange = (event) => {
+    setAboutMe(event.target.value); // Update the aboutMe state when the TextField value changes
+  };
+
+  const handleBirthdayChange = (event) => {
+    setBirthday(event.target.value); // Update the aboutMe state when the TextField value changes	
+  };
+
+  const handleAboutMeSubmit = async () => {
+    // Perform the submission to the database or API endpoint here
+    try {
+      // Example submission using fetch API
+      const response = await fetch(`/api/updateAboutMe/${currentUser}/${aboutMe}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: currentUser, aboutMe: aboutMe }),
+      });
+
+      // Handle the response or perform further actions
+      if (response.ok) {
+        alert("About Me updated successfully!");
+      } else {
+        console.error("Error updating About Me:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating About Me:", error);
+    }
+  };
+
+  const handleBirthdaySubmit = async () => {
+    // Perform the submission to the database or API endpoint here
+    try {
+      // Example submission using fetch API
+      const response = await fetch(`/api/updateBirthday/${currentUser}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: currentUser, birthday: birthday }) ,
+      });
+	//   console.log("Birthday: ", birthday)
+      // Handle the response or perform further actions
+      if (response.ok) {
+        alert("Birthday updated successfully!");
+      } else {
+        console.error("Error updating About Me:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating About Me:", error);
+    }
+	// console.log("Birthday: ", birthday)
+  };
+
+
+  const onSubmit = async () => {
 	try {
-		const formData = new FormData();
-		formData.append('image', selectedImage);
-		const response = await axios.post('/api/newProfilePic', formData, {
-		headers: {
-			'Content-Type': 'multipart/form-data',
-		},
-		});
-
-		console.log('Image uploaded. ID:', response.data.id);
+	  await emailSendPasswordReset(currentUser);
+	  alert("Password reset email sent!");
 	} catch (error) {
-		console.error('Failed to upload image', error);
+	  console.error("Error sending password reset email:", error);
 	}
-	};
+  };
 
-	return (
-		<Box class="my-profile-wrapper">
-			<NavBar/>
-			<input type="file" accept="image/*" onChange={handleImageChange} />
-			<Button onClick={handleImageUpload}>Upload</Button>
-				{/* <div class="my-profile-container"> */}
-					{/* <!--Holds option to change profile picture and password  --> */}
-				{/* </div> */}
-			{/* </NavBar> */}
-		</Box>
-	);
+  return (
+    <Box className="my-profile-wrapper">
+      <NavBar />
+      <h1 style={{ marginLeft: "10px" }}>{currentUser}'s Profile</h1>
+      <TextField
+        label="About Me"
+        variant="outlined"
+        value={aboutMe}
+        onChange={handleAboutMeChange}
+        style={{ marginLeft: "10px" }}
+      />
+      <Button variant="contained" sx={{ margin: "10px" }} onClick={handleAboutMeSubmit}>Update About Me</Button>
+      <TextField
+        label="Birthday"
+        variant="outlined"
+        value={birthday}
+		type={"date"}
+		InputLabelProps={{ shrink: true}}
+        onChange={handleBirthdayChange}
+        style={{ marginLeft: "10px" }}
+      />
+      <Button variant="contained" sx={{ margin: "10px" }} onClick={handleBirthdaySubmit}>Update Birthday</Button>	  
+      <Button variant="contained" sx={{ margin: "10px" }} onClick={onSubmit}>Reset Password</Button>
+    </Box>
+  );
 };
 
 export default Profile;
+
+

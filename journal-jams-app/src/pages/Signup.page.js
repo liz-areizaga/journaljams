@@ -32,22 +32,19 @@ const Signup = () => {
     // As explained in the Login page.
     const onSubmit = async () => {
       try {
-        const user = await emailPasswordSignup(form.email, form.password);
-        if (user) {          
-          fetch(`/api/newUser/${form.email}`, {
-            method: "POST",
-            body: JSON.stringify({ email: form.email }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(response => { 
-            // Handle the response from the API
-            redirectNow();
-          });
-        }
+        await emailPasswordSignup(form.email, form.password);
+        // fetch(`/api/newUser/${form.email}`, {
+        //   method: "POST",
+        //   body: JSON.stringify({ email: form.email }),
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   }
+        // })
+        // .then(response => { 
+        redirectNow();
+        // });
       } catch (error) {
-        alert(error);
+        alert("Error or Confirmation Email Sent");
       }
     };
 

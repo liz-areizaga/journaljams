@@ -11,7 +11,6 @@ const Home = () => {
         <>
             <NavBar />
             <Box>
-                
                 <img src = "journaljamslogo.png" alt="Journal Jams Logo"/>      
                 <h1>Welcome to JournalJams</h1>
                 {/* <Button variant="contained" onClick={logOut}>Logout</Button> */}
