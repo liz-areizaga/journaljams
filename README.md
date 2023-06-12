@@ -10,7 +10,7 @@ JournalJams is a web application that allow users to input their journal entries
 - User can change their password
  
 #### User Authentication and Authorization:
-- User can Sign Up with Dual Factor Authentication
+- User can Sign Up with Dual Factor Authentication by email confirmation
 - User must log in with valid email and password
 
 #### Rating and Commenting:
@@ -28,6 +28,7 @@ JournalJams is a web application that allow users to input their journal entries
 
 #### Social Network:
 - User can add and remove friends by their email
+- Users can talk to each other in a chatroom
 
 #### Playlist Recommendation System:
 - User is recommended based on the mood of their entry
