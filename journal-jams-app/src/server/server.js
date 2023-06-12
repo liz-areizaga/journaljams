@@ -405,7 +405,7 @@ app.get('/api/allMessages/:room', (req, res) => { //get messages of specific roo
 });
 
 
-app.get('/api/allComments/:entry', (req, res) => { //get comments of specific room
+app.get('/api/allComments/:entry', (req, res) => { //get comments of specific entry
   console.log("Inside of /api/allComments/:entry");
   const entry = req.params.entry;
   Comment.findOne({entry_id: entry}, {'comments.user': 1, 'comments.comment': 1, 'comments.rating': 1})
@@ -459,3 +459,50 @@ app.get('/api/userfriendList/:email', (req, res) => {
         res.sendStatus(500);
       });
   });
+  app.put('/api/upVote/:entry_id/:index', (req, res) => {
+    const entryId = req.params.entry_id;
+    const index = req.params.index;
+    Comment.findOne(
+      {entry_id: entryId }).then((doc) => {
+        console.log(doc.comments[index]._id)
+        const comment_id = doc.comments[index]._id;
+          Comment.updateMany(
+            { "comments._id": comment_id},
+            { $inc: { "comments.$.rating": 1 } },
+            {new: true}
+          ).then((comment) => {
+              console.log(comment);
+              console.log("Updated your comment on the DB!");
+              res.status(200).json({ message: 'Comment updated successfully' });
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: 'Failed to update the comment' });
+            });
+      }
+      )
+  })
+
+  app.put('/api/downVote/:entry_id/:index', (req, res) => {
+    const entryId = req.params.entry_id;
+    const index = req.params.index;
+    Comment.findOne(
+      {entry_id: entryId }).then((doc) => {
+        console.log(doc.comments[index]._id)
+        const comment_id = doc.comments[index]._id;
+          Comment.updateMany(
+            { "comments._id": comment_id},
+            { $inc: { "comments.$.rating": -1 } },
+            {new: true}
+          ).then((comment) => {
+              console.log(comment);
+              console.log("Updated your comment on the DB!");
+              res.status(200).json({ message: 'Comment updated successfully' });
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({ error: 'Failed to update the comment' });
+            });
+      }
+      )
+  })
