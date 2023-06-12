@@ -11,15 +11,13 @@ const socketIO = require('socket.io');
 const http = require('http');
 const cors  = require("cors");
 const session = require('express-session');
-const profilepic = require('../Models/ProfilePics');
+const ProfilePic = require('../Models/ProfilePics');
 const FriendList = require('../Models/FriendLists');
 const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-const routes = require('./routes/profilepic_backend.js');
 
 //express app
 const app = express();
+var router = express.Router();
 const server = http.createServer(app);
 
 const io = socketIO(server, {
@@ -134,40 +132,80 @@ app.post('/api/newUserFriendList/:email', (req, res) => {
     }
   });
   
+  app.post('/api/newUser/:email', (req, res) => {
+    console.log("Inside of /api/newUser/:email");
+    const email = req.params.email;
+    User.findOne({ email: email }) // Check if user with the provided email already exists
+      .then((existingUser) => {
+        if (existingUser) {
+          console.log("User already exists");
+          res.send(existingUser); // Return the existing user
+        } else {
+          const newEntry = new User({ email: email }); // Create a new user entry
+          newEntry.save()
+            .then((result) => {
+              console.log("Added a new user to the DB");
+              res.send(result); // Return the newly created user
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).send("Internal Server Error");
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
 
-
-app.post('/api/newProfilePic', upload.single('image'), async (req, res) => {
-    console.log('Inside of /api/newProfilePic');
-    const image = new profilepic({
-        data: req.file.buffer,
-        contentType: req.file.mimetype,
+app.post('/api/updateBirthday/:email', (req, res) => {
+  console.log("Inside of /api/newBirthday/:email");
+  const email = req.body.email;
+  const birthday = req.body.birthday;
+  User.findOneAndUpdate(
+    { email: email }, // Filter to find the specific user by email
+    { birthday: birthday }, // Update the birthday field
+    { new: true } // Return the updated user after the update
+  )
+    .then((updatedUser) => {
+      if (updatedUser) {
+        console.log("Updated birthday for the user with email:", email);
+        console.log("Updated with birthday:", birthday);
+        res.send(updatedUser);
+      } else {
+        console.log("User not found");
+        res.status(404).send("User not found");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Internal Server Error");
     });
-    image.save()    
-        .then((result) => {
-            console.log("Sent your profile pic to the DB!");
-            res.json({ id: image._id });
-            // res.send(result);
-        })
-        .catch((err) => {
-            console.error('Failed to upload image', err);
-            // res.status(500).json({ error: 'Failed to upload image' });
-        });
 });
 
-app.post('/api/newUser/:email', (req, res) => { //add the newEntry to the DB
-    console.log("Inside of /api/newUser");
-    const new_entry = new User({
-        email: req.params.email,
+app.post('/api/updateAboutMe/:email/:aboutme', (req, res) => {
+  console.log("Inside of /api/newUser/:email/:aboutme");
+  const email = req.params.email;
+  const aboutme = req.params.aboutme;
+  User.findOneAndUpdate(
+    { email: email }, // Filter to find the specific user by email
+    { aboutme: aboutme }, // Update the aboutme field
+    { new: true } // Return the updated user after the update
+  )
+    .then((updatedUser) => {
+      if (updatedUser) {
+        console.log("Updated aboutme for the user with email:", email);
+        res.send(updatedUser);
+      } else {
+        console.log("User not found");
+        res.status(404).send("User not found");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Internal Server Error");
     });
-    new_entry.save()
-        .then((result) => {
-            console.log("Sent your username to the DB!");
-            res.send(result);
-            // res.redirect('http://localhost:3000/login')
-        })
-        .catch((err) => {
-            console.log(err);
-        });
 });
 
 
@@ -257,6 +295,27 @@ app.post('/api/newMessage', (req, res) => {
       });
   });
   
+  app.get('/api/getUserInfo/:email', (req, res) => {
+    const email = req.params.email;
+    User.findOne({ email: email })
+      .then((user) => {
+        if (user) {
+          const { aboutme, birthday } = user;
+          console.log("About Me:", aboutme);
+          console.log("Birthday:", birthday);
+          res.send({ aboutme, birthday });
+        } else {
+          console.log("User not found");
+          res.status(404).send("User not found");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
+  
+
 app.get('/api/allEntries/:user', (req, res) => {
     console.log("Inside of /api/allEntries/:user");
     const user = req.params.user;
@@ -339,6 +398,3 @@ app.get('/api/userfriendList/:email', (req, res) => {
         res.sendStatus(500);
       });
   });
-    
-  
-// app.use('/api', routes);

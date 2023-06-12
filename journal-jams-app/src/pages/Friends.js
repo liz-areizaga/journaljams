@@ -15,6 +15,8 @@ const Friends = () => {
   const [data, setData] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
   const [selectedFriend, setSelectedFriend] = useState("");
+  const [friendBirthday, setFriendBirthday] = useState("");
+  const [friendAboutMe, setFriendAboutMe] = useState("");  
   const [friendList, setFriendList] = useState([]);
   const [entriesList, setEntriesList] = useState([
     {
@@ -35,9 +37,7 @@ const Friends = () => {
       if(fetchedUser) { console.log("Current User:", fetchedUser.profile.email); 
         setCurrentUser(fetchedUser.profile.email);
         await fetch('/api/allUsers', {method:"GET"})
-          .then(response => response.json())
-          // .then((jsonRes) => setData(jsonRes))
-          // .then((jsonRes) => console.log(jsonRes))          
+          .then(response => response.json())     
           .then((jsonRes) => setData(jsonRes.filter((user => !user.email.includes(fetchedUser.profile.email)))))
           .catch(err => console.log(err));
         await fetch(`/api/userfriendList/${fetchedUser.profile.email}`, {method:"GET"})
@@ -78,13 +78,18 @@ const Friends = () => {
     // friend = "lojason71@gmail.com"
     tempSelectedFriend = friend;
     setSelectedFriend(friend);
+    fetch(`/api/getUserInfo/${tempSelectedFriend}`, {method:"GET"})
+    .then(response => response.json())
+    .then((jsonRes) => {
+      setFriendAboutMe(jsonRes.aboutMe);
+      setFriendBirthday(jsonRes.birthday);
+    });    
     fetch(`/api/allEntries/${tempSelectedFriend}`, {method:"GET"})
       .then(response => response.json())
       .then((jsonRes) => {
-        // tempEntriesList = jsonRes;
         setEntriesList(jsonRes);
       });
-    console.log(entriesList);
+    // console.log(entriesList);
     setIsModalOpen(true);
   };
 
@@ -226,22 +231,29 @@ const Friends = () => {
                   X
               </Button> 
               <Typography variant="h4" gutterBottom> {`${selectedFriend}'s Entries` } </Typography>                
+              <Typography variant="h5" gutterBottom> About Me: <Typography variant="h6"> {friendAboutMe || "About Me is not set"} </Typography> </Typography>
+              <Typography variant="h5" gutterBottom> Birthday: <Typography variant="h6"> {friendBirthday || "Birthday is not set"} </Typography> </Typography>
                 <Box>               
-                  <List>
-                    <ListItemText> 
-                      <Typography variant="body1" style={{ fontWeight: 'bold', marginLeft: '10px' }}>
-                        Title 
-                      </Typography>
-                    </ListItemText> 
-                    {entriesList.map((entry) => (
+                <List>
+                  <ListItemText>
+                    <Typography variant="body1" style={{ fontWeight: 'bold', marginLeft: '10px' }}>
+                      Title
+                    </Typography>
+                  </ListItemText>
+                  {entriesList.length > 0 ? (
+                    entriesList.map((entry) => (
                       <Box display="flex" alignItems="center">
                         <ListItemButton key={entry.title} onClick={() => handleEntryClick(entry)}>
                           <ListItemText primary={entry.title} />
                         </ListItemButton>
-                        {/* {console.log(entry)} */}
-                    </Box>
-                    ))}      
-                  </List>
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography variant="body1" style={{ marginLeft: '10px' }}>
+                      Entry List is empty
+                    </Typography>
+                  )}
+                </List>
                   <Modal
                     isOpen={isEntryOpen}
                     ariaHideApp={false}
