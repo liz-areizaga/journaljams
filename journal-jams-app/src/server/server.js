@@ -346,7 +346,7 @@ app.get('/api/allMessages/:room', (req, res) => { //get messages of specific roo
 });
 
 
-app.get('/api/allComments/:entry', (req, res) => { //get comments of specific room
+app.get('/api/allComments/:entry', (req, res) => { //get comments of specific entry
   console.log("Inside of /api/allComments/:entry");
   const entry = req.params.entry;
   Comment.findOne({entry_id: entry}, {'comments.user': 1, 'comments.comment': 1, 'comments.rating': 1})
@@ -400,6 +400,40 @@ app.get('/api/userfriendList/:email', (req, res) => {
         res.sendStatus(500);
       });
   });
+
+  app.put('/api/upVote/:comment_text', (req, res) => {
+    const commentText = req.params.comment_text;
+    console.log(commentText);
+    Comment.updateMany(
+      { "comments.comment": commentText},
+      { $inc: { "comments.$.rating": 1 } },
+      {multi: true}
+    ).then((doc) => {
+      console.log(doc);
+      console.log("Updated your comment on the DB!");
+        res.status(200).json({ message: 'Comment updated successfully' });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to update the comment' });
+      });
+    // Comment.findOne(
+    //   {entry_id: entryId },
+    //   {
+    //     'comments.$[outer].$[inner].user': 1,
+    //     'comments.$[outer].$[inner].comment': 1,
+    //     'comments.$[outer].$[inner].rating': 1
+    //   },
+    //   {
+    //     arrayFilters: [
+    //       { 'outer._id': entryId },
+    //       { 'inner._id': commentId }
+    //     ]
+    //   }).then(
+
+    //   )
+      // {'comments.user': 1, 'comments.comment': 1, 'comments.rating': 1})
+  })
     
   
 // app.use('/api', routes);

@@ -5,7 +5,6 @@ import {main} from '../pages_2/SpotifyNLP.js';
 import Modal from 'react-modal';
 import { Box, Button, TextField, InputLabel, Typography, List, ListItemButton, ListItemText, ListItem } from '@mui/material';
 import { UserContext } from "../contexts/user.context";
-import Comment from '../Components/CommentAndUpvote/CommentAndUpvote.js';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton'
@@ -30,7 +29,16 @@ const Entries = () => {
       }
     ]);
   
-  const increase = () => {
+  const increase = (entry_id, comment_text) => {
+    console.log(comment_text);
+    fetch(`/api/upVote/${comment_text}`, { method: "PUT" })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Comment updated successfully');
+        } else {
+          throw new Error('Failed to update comment');
+        }
+      })
       setVote(vote + 1);
   };
   
@@ -151,7 +159,7 @@ const Entries = () => {
     event.preventDefault();
     fetch('/api/newComment', {
       method: 'POST',
-      body: JSON.stringify({username: currentUser, entry_id: selectedEntry.id, comment: document.getElementById('comment').value, rating: '0'}),
+      body: JSON.stringify({username: currentUser, entry_id: selectedEntry.id, comment: document.getElementById('comment').value, rating: 0}),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -259,7 +267,7 @@ const Entries = () => {
                   />
                     <Box id = "arrow_container" style={{marginTop:'12px'}}>
                     <Stack direction="column" spacing = {2}>
-                        <IconButton id = "arrows" onClick = {increase}>
+                        <IconButton id = "arrows" onClick = {() => {increase(selectedEntry.id, comment.comment)}}>
                             <KeyboardArrowUpIcon/> 
                         </IconButton>
                         {console.log(comment.rating)}
