@@ -459,6 +459,7 @@ app.get('/api/userfriendList/:email', (req, res) => {
         res.sendStatus(500);
       });
   });
+
   app.put('/api/upVote/:entry_id/:index', (req, res) => {
     const entryId = req.params.entry_id;
     const index = req.params.index;
@@ -483,26 +484,27 @@ app.get('/api/userfriendList/:email', (req, res) => {
       )
   })
 
-  app.put('/api/downVote/:entry_id/:index', (req, res) => {
+  app.get('/api/getVote/:entry_id/:index', (req, res) => {
     const entryId = req.params.entry_id;
     const index = req.params.index;
-    Comment.findOne(
-      {entry_id: entryId }).then((doc) => {
-        console.log(doc.comments[index]._id)
-        const comment_id = doc.comments[index]._id;
-          Comment.updateMany(
-            { "comments._id": comment_id},
-            { $inc: { "comments.$.rating": -1 } },
-            {new: true}
-          ).then((comment) => {
-              console.log(comment);
-              console.log("Updated your comment on the DB!");
-              res.status(200).json({ message: 'Comment updated successfully' });
-            })
-            .catch((err) => {
-              console.log(err);
-              res.status(500).json({ error: 'Failed to update the comment' });
-            });
-      }
-      )
-  })
+  
+    Comment.findOne({ entry_id: entryId })
+      .then((doc) => {
+        if (doc) {
+          const comment = doc.comments[index];
+          if (comment) {
+            console.log(comment);            
+            const commentRating = comment.rating;
+            res.status(200).json({ rating: commentRating });
+          } else {
+            res.status(404).json({ error: 'Comment not found' });
+          }
+        } else {
+          res.status(404).json({ error: 'Entry not found' });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to retrieve the comment rating' });
+      });
+  });
