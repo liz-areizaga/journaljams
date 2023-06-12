@@ -3,32 +3,47 @@ import { Link } from "react-router-dom";
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../contexts/user.context';
 // import { Image } from '../../Models/ProfilePics';
-import axios from 'axios';
+// import axios from 'axios';
 import {AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem} from '@mui/material'
 
 const pages = ['Home', 'Entries', 'Friends', 'Lobby'];
-const settings = ['Profile', 'Account', 'Logout'];
+const settings = ['Profile', 'Logout'];
 
 function Navbar() {
     const [imageData, setImageData] = useState(null);
     const [contentType, setContentType] = useState('');
 
-    useEffect(() => {
-        // Call the API to query the image
-        queryImage();
-    }, []);
+    // useEffect(() => {
+    //     // Call the API to query the image
+    //     queryImage();
+    // }, []);
 
-    const queryImage = async () => {
-        try {
-            const response = await axios.get('/api/newProfilePic/647ecdf649e7777dd09311e2'); // Replace with the actual API endpoint and image ID
-            const { data, contentType } = response.data;
-            setImageData(data);
-            setContentType(contentType);
-        } catch (error) {
-            console.error('Failed to query image', error);
-            // Handle error
-        }
-    };
+    // const queryImage = async () => {
+    //     try {
+    //         const username = 'lojason71@gmail.com';
+    //         fetch(`/api/newProfilePic/${username}`, {method: 'GET'})
+    //             .then((response) => response.json())
+    //             .then((jsonRes) => {
+    //                 const { data, contentType } = jsonRes;
+    //                 setImageData(data);
+    //                 setContentType(contentType);
+    //             }
+    //         )
+    //     } catch (error) {
+    //         console.error('Failed to query image', error);
+    //         // Handle error
+    //     }
+        // try {
+        //     const id = '647ecdf649e7777dd09311e2'; // Replace with the actual image ID
+        //     const response = await axios.get(`/api/newProfilePic/${id}`); // Replace with the actual API endpoint and image ID
+        //     const { data, contentType } = response.data;
+        //     setImageData(data);
+        //     setContentType(contentType);
+        // } catch (error) {
+        //     console.error('Failed to query image', error);
+        //     // Handle error
+    // };
+
     const { logOutUser } = useContext(UserContext);
  
     // This function is called when the user clicks the "Logout" button.
