@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Entry = require('../Models/Entries'); 
 const User = require('../Models/UserInfo');
 const Message = require('../Models/Messages');
+const Comment = require('../Models/Comments');
 const userRoom = require('../Models/Rooms');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -232,6 +233,47 @@ app.post('/api/newMessage', (req, res) => {
       });
   });
 
+  app.post('/api/newComment', (req, res) => {
+    const entry = req.body.entry_id;
+    const userName = req.body.username; // Corrected typo in "username" variable name
+    const comment = req.body.comment;
+  
+    // Find the document for the specified room
+    Comment.findOne({ entry_id: entry })
+      .then((foundComment) => {
+        if (foundComment) {
+          // Append the new message to the existing messages array
+          foundComment.comments.push({
+            user: userName,
+            comment: comment
+          });
+  
+          // Save the updated document
+          return foundComment.save();
+        } else {
+          // If the document for the specified room doesn't exist, create a new one
+          const newComment = new Comment({
+            entry_id: entry,
+            comments: [{
+              user: userName,
+              comment: comment
+            }]
+          });
+  
+          // Save the new document
+          return newComment.save();
+        }
+      })
+      .then(() => {
+        console.log("Sent your comment to the DB!");
+        res.status(200).json({ message: 'Comment saved successfully' });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to save the comment' });
+      });
+  });
+
   app.post('/api/newRoom/:user/:room', (req, res) => {
     console.log("Inside of /api/newRoom/:user/:room");
     const { user, room } = req.params;
@@ -297,6 +339,20 @@ app.get('/api/allMessages/:room', (req, res) => { //get messages of specific roo
         .catch((err) => {
             console.log(err);
         })
+});
+
+
+app.get('/api/allComments/:entry', (req, res) => { //get comments of specific room
+  console.log("Inside of /api/allComments/:entry");
+  const entry = req.params.entry;
+  Comment.findOne({entry_id: entry}, {'comments.user': 1, 'comments.comment': 1})
+      .then((result) => {
+          console.log(result.comments);
+          res.send(result.comments);
+      })
+      .catch((err) => {
+          console.log(err);
+      })
 });
 
 app.get('/api/allRooms/:user', (req, res) => {

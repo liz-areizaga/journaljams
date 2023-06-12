@@ -4,6 +4,7 @@ import {main} from '../pages_2/SpotifyNLP.js';
 import Modal from 'react-modal';
 import { Box, Button, TextField, InputLabel, Typography, List, ListItemButton, ListItemText } from '@mui/material';
 import { UserContext } from "../contexts/user.context";
+import Comment from '../Components/CommentAndUpvote/CommentAndUpvote.js';
 
 const Entries = () => {
   const { fetchUser } = useContext(UserContext);
@@ -13,6 +14,8 @@ const Entries = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [currentUser, setCurrentUser] = useState("");
   const [mood, setMood] = useState('');
+  const [comments, setComments] = useState([]) //state gets array
+  const [isCommenting, setIsCommenting] = useState(false);
   const [entriesList, setEntriesList] = useState([
     {
         id: "",
@@ -46,6 +49,19 @@ const Entries = () => {
     }
   };
 
+  const handleFetchComments = async (entry) => {
+    try {
+      const response = await fetch(`/api/allComments/${entry}`, { method: "GET" });
+      const jsonRes = await response.json();
+      console.log(jsonRes);      
+      setComments(jsonRes);
+      console.log(comments);
+    } catch (err) {
+      console.log("Error in handleFechComments")
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
     handleFetchUser();
   },[]);
@@ -53,6 +69,7 @@ const Entries = () => {
   const handleEntryClick = (entry) => {
     setSelectedEntry(entry);
     setIsModalOpen(true);
+    handleFetchComments(entry.id);
   };
 
   const closeEntryModal = () => {
@@ -118,6 +135,35 @@ const Entries = () => {
       })
   };  
 
+  const addComment = (event) => {
+    event.preventDefault();
+    fetch('/api/newComment', {
+      method: 'POST',
+      body: JSON.stringify({username: currentUser, entry_id: selectedEntry.id, comment: document.getElementById('comment').value}),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      if (response.ok) {
+        console.log('Comment submitted successfully');
+        // Handle the response from the API
+      } else {
+        throw new Error('Failed to submit comment');
+      }
+    })
+    .catch((error) => {
+      console.error('Error submitting comment:', error);
+      alert(error);
+    })
+    document.getElementById('comment').value = "";
+    setIsCommenting(false);
+  }
+
+  const handleComment = () => {
+    setIsCommenting(!isCommenting);
+  }
+
   return (
     <>
       <NavBar />
@@ -180,6 +226,24 @@ const Entries = () => {
                 <Typography variant="body1" gutterBottom> Text: {selectedEntry.text} </Typography>
               </>
             )}
+            <Box>
+              { comments.map((comment, i) => (
+              <Comment key={i} addComment={addComment} comment={comment} username={currentUser} postMessage={comment}></Comment>
+            ))}
+            </Box>
+            { isCommenting && 
+            (<form onSubmit={addComment}>
+              <Box mb={2}>
+                <InputLabel className="modal-labels" htmlFor="exampleInputPassword1">Comment</InputLabel>
+                <TextField id="comment" name="comment" variant="outlined" fullWidth />
+              </Box> 
+              <Box display="flex" justifyContent="flex-end">
+                <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={handleComment}>Close</Button>
+                <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} type="submit" >Submit</Button>
+              </Box>
+            </form> 
+            )}
+            <Button variant="contained" style={{ marginTop: '10px', marginRight: '10px' }} onClick={handleComment}>Comment</Button>
             <Button variant="contained" color="error" style={{ marginTop: '10px', marginRight: '10px' }} onClick={closeEntryModal}>Close</Button>
           </Modal>  
         </Box>
