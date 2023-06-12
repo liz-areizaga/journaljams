@@ -102,3 +102,23 @@ a {
   flex-direction: row;
   justify-content: flex-start;
 }
+
+#arrows{
+  display: flex;
+  flex-direction:column;
+  margin-left: 75px;
+  margin-top: -20px;
+}
+
+#arrow_container{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:-20px;
+}
+
+#vote{
+  margin-left:85px;
+  margin-top: -20px;
+  font-size: 25px;
+  padding:3px;
+}

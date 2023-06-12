@@ -1,10 +1,15 @@
+import './Pages.css'
 import React, { useState , useEffect, useContext} from 'react';
 import NavBar from "../Components/NewNavbar/Navbar";
 import {main} from '../pages_2/SpotifyNLP.js';
 import Modal from 'react-modal';
-import { Box, Button, TextField, InputLabel, Typography, List, ListItemButton, ListItemText } from '@mui/material';
+import { Box, Button, TextField, InputLabel, Typography, List, ListItemButton, ListItemText, ListItem } from '@mui/material';
 import { UserContext } from "../contexts/user.context";
 import Comment from '../Components/CommentAndUpvote/CommentAndUpvote.js';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 
 const Entries = () => {
   const { fetchUser } = useContext(UserContext);
@@ -14,8 +19,9 @@ const Entries = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [currentUser, setCurrentUser] = useState("");
   const [mood, setMood] = useState('');
-  const [comments, setComments] = useState([]) //state gets array
+  const [comments, setComments] = useState([]) 
   const [isCommenting, setIsCommenting] = useState(false);
+  const [vote, setVote] = useState(0);
   const [entriesList, setEntriesList] = useState([
     {
         id: "",
@@ -24,6 +30,13 @@ const Entries = () => {
       }
     ]);
   
+  const increase = () => {
+      setVote(vote + 1);
+  };
+  
+  const decrease = () => {
+      setVote(vote - 1);
+  };
   const handleFetchUser = async () => {
     try {
       const fetchedUser = await fetchUser();
@@ -51,11 +64,10 @@ const Entries = () => {
 
   const handleFetchComments = async (entry) => {
     try {
-      const response = await fetch(`/api/allComments/${entry}`, { method: "GET" });
-      const jsonRes = await response.json();
-      console.log(jsonRes);      
-      setComments(jsonRes);
-      console.log(comments);
+      fetch(`/api/allComments/${entry}`, { method: "GET" }).then(response=>response.json())
+        .then((jsonRes) => {
+          setComments(jsonRes);
+        })
     } catch (err) {
       console.log("Error in handleFechComments")
       console.log(err);
@@ -139,7 +151,7 @@ const Entries = () => {
     event.preventDefault();
     fetch('/api/newComment', {
       method: 'POST',
-      body: JSON.stringify({username: currentUser, entry_id: selectedEntry.id, comment: document.getElementById('comment').value}),
+      body: JSON.stringify({username: currentUser, entry_id: selectedEntry.id, comment: document.getElementById('comment').value, rating: '0'}),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -156,8 +168,11 @@ const Entries = () => {
       console.error('Error submitting comment:', error);
       alert(error);
     })
+    setComments([...comments, {user: currentUser, comment: document.getElementById('comment').value, rating: '0'}])
     document.getElementById('comment').value = "";
     setIsCommenting(false);
+    // handleFetchComments(selectedEntry.id);
+    // window.location.reload();
   }
 
   const handleComment = () => {
@@ -227,9 +242,36 @@ const Entries = () => {
               </>
             )}
             <Box>
-              { comments.map((comment, i) => (
-              <Comment key={i} addComment={addComment} comment={comment} username={currentUser} postMessage={comment}></Comment>
-            ))}
+              { comments.length > 0 && (comments.map((comment, i) => (
+                <List key={i}>
+                  <ListItem sx={{border:"1px solid black", borderRadius: "30px"}} >
+                  <ListItemText
+                  primary={
+                    <Typography variant="h6" style={{ fontSize: '16px' }}>
+                      {comment.user}
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="h5" style={{ fontSize: '20px' }}>
+                      {comment.comment}
+                    </Typography>
+                  }
+                  />
+                    <Box id = "arrow_container" style={{marginTop:'12px'}}>
+                    <Stack direction="column" spacing = {2}>
+                        <IconButton id = "arrows" onClick = {increase}>
+                            <KeyboardArrowUpIcon/> 
+                        </IconButton>
+                        {console.log(comment.rating)}
+                        <span id="vote" >{comment.rating}</span>
+                        <IconButton id = "arrows" onClick = {decrease}>
+                            <KeyboardArrowDownIcon /> 
+                        </IconButton>
+                    </Stack>
+                </Box>
+                  </ListItem>
+                </List>
+            )))}
             </Box>
             { isCommenting && 
             (<form onSubmit={addComment}>

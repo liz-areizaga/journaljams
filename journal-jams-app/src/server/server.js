@@ -237,6 +237,7 @@ app.post('/api/newMessage', (req, res) => {
     const entry = req.body.entry_id;
     const userName = req.body.username; // Corrected typo in "username" variable name
     const comment = req.body.comment;
+    const rating = req.body.rating;
   
     // Find the document for the specified room
     Comment.findOne({ entry_id: entry })
@@ -245,18 +246,21 @@ app.post('/api/newMessage', (req, res) => {
           // Append the new message to the existing messages array
           foundComment.comments.push({
             user: userName,
-            comment: comment
+            comment: comment,
+            rating: rating
           });
   
           // Save the updated document
           return foundComment.save();
         } else {
           // If the document for the specified room doesn't exist, create a new one
+          console.log(rating)
           const newComment = new Comment({
             entry_id: entry,
             comments: [{
               user: userName,
-              comment: comment
+              comment: comment,
+              rating: rating
             }]
           });
   
@@ -345,7 +349,7 @@ app.get('/api/allMessages/:room', (req, res) => { //get messages of specific roo
 app.get('/api/allComments/:entry', (req, res) => { //get comments of specific room
   console.log("Inside of /api/allComments/:entry");
   const entry = req.params.entry;
-  Comment.findOne({entry_id: entry}, {'comments.user': 1, 'comments.comment': 1})
+  Comment.findOne({entry_id: entry}, {'comments.user': 1, 'comments.comment': 1, 'comments.rating': 1})
       .then((result) => {
           console.log(result.comments);
           res.send(result.comments);
