@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Box, Button, TextField, Typography, List, ListItemButton, ListItemText, ListItem} from '@mui/material';
+import { Box, Button, TextField, List, ListItemText, ListItem} from '@mui/material';
 import { UserContext } from "../contexts/user.context";
 
 const Chatroom = (props) => {
