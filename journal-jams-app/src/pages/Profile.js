@@ -13,16 +13,16 @@ const Profile = () => {
     try {
       const fetchedUser = await fetchUser();
       if (fetchedUser) {
-        console.log("Current User:", fetchedUser.profile.email);
-        setCurrentUser(fetchedUser.profile.email);
-        fetch(`/api/getUserInfo/${fetchedUser.profile.email}`, {method:"GET"})
+        console.log("Current User:", fetchedUser.profile.email);        
+        setCurrentUser(fetchedUser.profile.email);           
+      }
+      await fetch(`/api/getUserInfo/${fetchedUser.profile.email}`, {method:"GET"})
         .then(response => response.json())
         .then((jsonRes) => {
-          setAboutMe(jsonRes.aboutMe);
+          console.log("Fetched UserInfo: " + jsonRes.aboutme + " " + jsonRes.birthday);
+          setAboutMe(jsonRes.aboutme);
           setBirthday(jsonRes.birthday);
-        });            
-        // setAboutMe(fetchedUser.aboutme); // Set the aboutMe state based on the fetched user's aboutme
-      }
+        }); 
     } catch (error) {
       console.error("Error fetching user:", error);
     }
@@ -74,7 +74,6 @@ const Profile = () => {
         },
         body: JSON.stringify({ email: currentUser, birthday: birthday }) ,
       });
-	//   console.log("Birthday: ", birthday)
       // Handle the response or perform further actions
       if (response.ok) {
         alert("Birthday updated successfully!");
@@ -84,7 +83,6 @@ const Profile = () => {
     } catch (error) {
       console.error("Error updating About Me:", error);
     }
-	// console.log("Birthday: ", birthday)
   };
 
 
@@ -101,8 +99,8 @@ const Profile = () => {
     <Box className="my-profile-wrapper">
       <NavBar />
       <h1 style={{ marginLeft: "10px" }}>{currentUser}'s Profile</h1>
-      <Typography variant="h5" gutterBottom> About Me: <Typography variant="h6"> {aboutMe || "About Me is not set"} </Typography> </Typography>
-      <Typography variant="h5" gutterBottom> Birthday: <Typography variant="h6"> {birthday || "Birthday is not set"} </Typography> </Typography>
+      <Typography variant="h5" gutterBottom style={{ marginLeft: "10px", fontWeight:'bold'}}> About Me: <Typography variant="h6" style={{ marginLeft: "10px" }}> {aboutMe || "About Me is not set"} </Typography> </Typography>
+      <Typography variant="h5" gutterBottom style={{ marginLeft: "10px", fontWeight:'bold' }}> Birthday: <Typography variant="h6" style={{ marginLeft: "10px" }}> {birthday || "Birthday is not set"} </Typography> </Typography>
 
       <TextField
         label="About Me"
@@ -116,10 +114,11 @@ const Profile = () => {
         label="Birthday"
         variant="outlined"
         value={birthday}
-		type={"date"}
-		InputLabelProps={{ shrink: true}}
+        type={"date"}
+        InputLabelProps={{ shrink: true}}
         onChange={handleBirthdayChange}
         style={{ marginLeft: "10px" }}
+        // defaultValue={birthdayTemp}
       />
       <Button variant="contained" sx={{ margin: "10px" }} onClick={handleBirthdaySubmit}>Update Birthday</Button>	  
       <Button variant="contained" sx={{ margin: "10px" }} onClick={onSubmit}>Reset Password</Button>
