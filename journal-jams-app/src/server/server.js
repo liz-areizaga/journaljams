@@ -59,7 +59,6 @@ app.use(bodyParser.json());
 
 // Serve the static files from the React app
 app.use(express.static('src'));
-console.log(process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL);
 const database = mongoose.connection;
 database.on('error', (error) => console.log(error));
