@@ -67,7 +67,7 @@ JournalJams is a web application that allow users to input their journal entries
   - About Me
  
 ## Divison of Labour:
-Jason Lo: Completed user authenticaion with dual factor authenticaion requiring email verification. Implemented Login and Sign Up functionality. Implemented user profiling with birthday, about me, and change password attributes. Worked together with groupmates to implement chat room features. Connected MongoDB database messaging feature. Implemented friends page and corresponding datatbase. Designed front end of web application. 
+Jason Lo: Completed user authenticaion with dual factor authenticaion requiring email verification. Implemented Login and Sign Up functionality. Implemented user profiling with birthday, about me, and change password attributes. Worked together with groupmates to implement chat room features. Connected MongoDB database messaging feature. Implemented friends page and corresponding database. Designed front end of web application. 
 
 Lizbeth Areizaga: Collaborated on intial set up of the website. Initial set up of MongoDB database and connection with backend and frontend components. Worked together with groupmates to implement chat room features. Implemented display of entries and fetching entries from the database. Implemented comments functionality including sending and fetching comments from the database and upvoting and downvoting on comments.
 
